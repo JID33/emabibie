@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Rotation Dream2Build1</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      input,
+      button {
+        padding: 10px;
+        font-size: 16px;
+        margin: 5px 0;
+      }
+      .card {
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 6px;
+        text-align: center;
+      }
+      th {
+        background-color: #333;
+        color: white;
+      }
+      ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState } = React;
+
+      function RotationApp() {
+        const [adminPass, setAdminPass] = useState("");
+        const [adminLoggedIn, setAdminLoggedIn] = useState(false);
+        const [participants, setParticipants] = useState([]);
+        const [name, setName] = useState("");
+        const [rotationIndex, setRotationIndex] = useState(0);
+        const [currentTotal, setCurrentTotal] = useState(0);
+        const [paymentsValidated, setPaymentsValidated] = useState(false);
+        const [history, setHistory] = useState([]);
+
+        const loginAdmin = () => {
+          if (adminPass === "d2b1admin") {
+            setAdminLoggedIn(true);
+          } else {
+            alert("Mot de passe incorrect");
+          }
+        };
+
+        const addParticipant = () => {
+          const trimmedName = name.trim();
+          if (!trimmedName) return alert("Veuillez entrer un nom valide.");
+          setParticipants([...participants, { name: trimmedName, day: participants.length + 1 }]);
+          setName("");
+        };
+
+        const validatePayments = () => {
+          if (participants.length === 0) {
+            alert("Aucun participant à valider.");
+            return;
+          }
+          const total = participants.length * 10;
+          const oneThird = total / 3;
+          const tenPercent = oneThird * 0.1;
+          const retained = oneThird - tenPercent;
+          const payout = total - retained;
+
+          setHistory([
+            ...history,
+            {
+              jour: rotationIndex + 1,
+              total: total.toFixed(2),
+              oneThird: oneThird.toFixed(2),
+              tenPercent: tenPercent.toFixed(2),
+              retained: retained.toFixed(2),
+              payout: payout.toFixed(2),
+              beneficiary: participants[rotationIndex % participants.length]?.name || "",
+            },
+          ]);
+          setCurrentTotal(total);
+          setPaymentsValidated(true);
+        };
+
+        const nextDay = () => {
+          if (!paymentsValidated) {
+            alert("Veuillez valider les paiements d'abord.");
+            return;
+          }
+          setRotationIndex(rotationIndex + 1);
+          setPaymentsValidated(false);
+        };
+
+        const exportToExcel = () => {
+          if (history.length === 0) {
+            alert("Aucun historique à exporter.");
+            return;
+          }
+          const ws = XLSX.utils.json_to_sheet(history);
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, "Historique");
+          XLSX.writeFile(wb, "D2B1_Rotation.xlsx");
+        };
+
+        // Calculs pour affichage
+        const total = currentTotal;
+        const oneThird = total / 3;
+        const tenPercent = oneThird * 0.1;
+        const retained = oneThird - tenPercent;
+        const payout = total - retained;
+
+        return (
+          <div>
+            <h1>Système Rotatif Dream2Build1</h1>
+
+            {!adminLoggedIn ? (
+              <div className="card">
+                <h2>Connexion Admin</h2>
+                <input
+                  type="password"
+                  placeholder="Mot de passe admin"
+                  value={adminPass}
+                  onChange={(e) => setAdminPass(e.target.value)}
+                />
+                <br />
+                <button onClick={loginAdmin}>Se connecter</button>
+              </div>
+            ) : (
+              <>
+                <div className="card">
+                  <h2>Ajouter un participant</h2>
+                  <input
+                    placeholder="Nom"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <br />
+                  <button onClick={addParticipant}>Ajouter</button>
+                </div>
+
+                <div className="card">
+                  <h2>Actions</h2>
+                  <button onClick={validatePayments} disabled={paymentsValidated || participants.length === 0}>
+                    ✅ Valider paiements
+                  </button>
+                  <button onClick={nextDay} disabled={!paymentsValidated}>
+                    🔁 Jour suivant
+                  </button>
+                  <button onClick={exportToExcel} disabled={history.length === 0}>
+                    📤 Exporter Excel
+                  </button>
+                </div>
+
+                <div className="card">
+                  <h2>Statistiques (Jour {rotationIndex + 1})</h2>
+                  {total > 0 ? (
+                    <>
+                      <p>
+                        Total: <strong>${total.toFixed(2)}</strong>
+                      </p>
+                      <p>
+                        1/3 du total: <strong>${oneThird.toFixed(2)}</strong>
+                      </p>
+                      <p>
+                        10% de 1/3: <strong>${tenPercent.toFixed(2)}</strong>
+                      </p>
+                      <p>
+                        Montant retenu: <strong>${retained.toFixed(2)}</strong>
+                      </p>
+                      <p>
+                        Part du bénéficiaire: <strong>${payout.toFixed(2)}</strong>
+                      </p>
+                    </>
+                  ) : (
+                    <p>Aucune donnée disponible.</p>
+                  )}
+                </div>
+
+                <div className="card">
+                  <h2>Historique des paiements</h2>
+                  {history.length > 0 ? (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Jour</th>
+                          <th>Bénéficiaire</th>
+                          <th>Total</th>
+                          <th>1/3</th>
+                          <th>10%</th>
+                          <th>Retiré</th>
+                          <th>Payé</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {history.map((h, i) => (
+                          <tr key={i}>
+                            <td>{h.jour}</td>
+                            <td>{h.beneficiary}</td>
+                            <td>{h.total}</td>
+                            <td>{h.oneThird}</td>
+                            <td>{h.tenPercent}</td>
+                            <td>{h.retained}</td>
+                            <td>
+                              <strong>{h.payout}</strong>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p>Aucun historique disponible.</p>
+                  )}
+                </div>
+
+                <div className="card">
+                  <h2>Participants</h2>
+                  {participants.length > 0 ? (
+                    <ul>
+                      {participants.map((p, i) => (
+                        <li key={i}>
+                          Jour {p.day} – {p.name}{" "}
+                          {i === rotationIndex % participants.length && (
+                            <strong>← Bénéficiaire</strong>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>Aucun participant pour l'instant.</p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<RotationApp />);
+    </script>
+  </body>
+</html>
