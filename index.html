@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Rotation Dream2Build1 - Version Simple</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
@@ -28,6 +27,7 @@
       padding: 10px;
       margin-top: 10px;
       font-size: 16px;
+      cursor: pointer;
     }
     table {
       width: 100%;
@@ -43,6 +43,18 @@
       background-color: #004080;
       color: white;
     }
+    .btn-danger {
+      background-color: #e74c3c;
+      color: white;
+    }
+    .btn-primary {
+      background-color: #004080;
+      color: white;
+    }
+    .btn-secondary {
+      background-color: #2980b9;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -50,21 +62,23 @@
 
   <div class="card" id="loginCard">
     <h2>Connexion Admin</h2>
-    <input type="password" id="adminPass" placeholder="Mot de passe">
+    <input type="password" id="adminPass" placeholder="Mot de passe" />
     <button onclick="loginAdmin()">Connexion</button>
   </div>
 
   <div class="card" id="mainApp" style="display:none;">
-    <button onclick="logout()" style="background:#e74c3c; color:white;">🚪 Déconnexion</button><br><br>
+    <button onclick="logout()" class="btn-danger">🚪 Déconnexion</button><br /><br />
 
     <h2>Ajouter un participant</h2>
-    <input type="text" id="participantName" placeholder="Nom">
-    <button onclick="addParticipant()">Ajouter</button>
+    <input type="text" id="participantName" placeholder="Nom" />
+    <button onclick="addParticipant()" class="btn-primary">Ajouter</button>
 
     <h2 style="margin-top: 30px;">Actions</h2>
-    <button onclick="validatePayments()">✅ Valider Paiements</button>
-    <button onclick="nextDay()">🔁 Jour Suivant</button>
-    <button onclick="exportExcel()">📤 Export Excel</button>
+    <button onclick="validatePayments()" class="btn-primary">✅ Valider Paiements</button>
+    <button onclick="nextDay()" class="btn-secondary">🔁 Jour Suivant</button><br><br>
+
+    <button onclick="exportHistory()" class="btn-primary">📤 Export Historique Modifiable</button>
+    <button onclick="exportFixedHistory()" class="btn-secondary">📤 Export Historique Fixe (Archive)</button>
 
     <div style="margin-top: 20px;">
       <h3>Statistiques (Jour <span id="jourNum">1</span>)</h3>
@@ -72,8 +86,13 @@
     </div>
 
     <div style="margin-top: 20px;">
-      <h3>Historique des paiements</h3>
+      <h3>Historique des paiements (modifiable)</h3>
       <div id="historyTable"></div>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <h3>Historique des paiements (fixe)</h3>
+      <div id="fixedHistoryTable"></div>
     </div>
 
     <div style="margin-top: 20px;">
@@ -87,6 +106,7 @@
     let rotationIndex = 0;
     let paymentsValidated = false;
     let history = [];
+    let fixedHistory = [];
 
     function loginAdmin() {
       const pass = document.getElementById("adminPass").value;
@@ -118,7 +138,7 @@
       participants.forEach((p, i) => {
         const li = document.createElement("li");
         li.textContent = "Jour " + p.day + " – " + p.name;
-        if (i === rotationIndex % participants.length) {
+        if (participants.length > 0 && i === rotationIndex % participants.length) {
           li.innerHTML += " <strong>← Bénéficiaire</strong>";
         }
         ul.appendChild(li);
@@ -138,14 +158,14 @@
       const beneficiary = participants[rotationIndex % participants.length].name;
       document.getElementById("jourNum").textContent = jour;
       document.getElementById("stats").innerHTML = `
-        Total: <strong>$${total.toFixed(2)}</strong><br>
-        1/3: <strong>$${oneThird.toFixed(2)}</strong><br>
-        10%: <strong>$${tenPercent.toFixed(2)}</strong><br>
-        Retenu: <strong>$${retained.toFixed(2)}</strong><br>
+        Total: <strong>$${total.toFixed(2)}</strong><br />
+        1/3: <strong>$${oneThird.toFixed(2)}</strong><br />
+        10%: <strong>$${tenPercent.toFixed(2)}</strong><br />
+        Retenu: <strong>$${retained.toFixed(2)}</strong><br />
         Bénéficiaire: <strong>$${payout.toFixed(2)}</strong> à ${beneficiary}
       `;
 
-      history.push({
+      const newEntry = {
         jour,
         beneficiary,
         total: total.toFixed(2),
@@ -153,9 +173,13 @@
         tenPercent: tenPercent.toFixed(2),
         retained: retained.toFixed(2),
         payout: payout.toFixed(2)
-      });
+      };
+
+      history.push(newEntry);
+      fixedHistory.push(newEntry);  // Ajout aussi dans l'historique fixe
 
       renderHistoryTable();
+      renderFixedHistoryTable();
     }
 
     function nextDay() {
@@ -188,12 +212,43 @@
       tableDiv.innerHTML = html;
     }
 
-    function exportExcel() {
-      if (history.length === 0) return alert("Aucun historique à exporter.");
+    function renderFixedHistoryTable() {
+      const tableDiv = document.getElementById("fixedHistoryTable");
+      if (fixedHistory.length === 0) {
+        tableDiv.innerHTML = "<p>Aucun historique fixe.</p>";
+        return;
+      }
+
+      let html = "<table><thead><tr><th>Jour</th><th>Bénéficiaire</th><th>Total</th><th>1/3</th><th>10%</th><th>Retenu</th><th>Payé</th></tr></thead><tbody>";
+      fixedHistory.forEach((row) => {
+        html += `<tr>
+          <td>${row.jour}</td>
+          <td>${row.beneficiary}</td>
+          <td>${row.total}</td>
+          <td>${row.oneThird}</td>
+          <td>${row.tenPercent}</td>
+          <td>${row.retained}</td>
+          <td><strong>${row.payout}</strong></td>
+        </tr>`;
+      });
+      html += "</tbody></table>";
+      tableDiv.innerHTML = html;
+    }
+
+    function exportHistory() {
+      if (history.length === 0) return alert("Aucun historique modifiable à exporter.");
       const ws = XLSX.utils.json_to_sheet(history);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Historique");
-      XLSX.writeFile(wb, "rotation_d2b1.xlsx");
+      XLSX.writeFile(wb, "rotation_d2b1_modifiable.xlsx");
+    }
+
+    function exportFixedHistory() {
+      if (fixedHistory.length === 0) return alert("Aucun historique fixe à exporter.");
+      const ws = XLSX.utils.json_to_sheet(fixedHistory);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Historique_Fixe");
+      XLSX.writeFile(wb, "rotation_d2b1_fixe.xlsx");
     }
   </script>
 </body>
