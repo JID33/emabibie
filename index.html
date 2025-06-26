@@ -5,18 +5,7 @@
   <title>D2B1 - Rotation en ligne</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#004080" />
-  <link rel="manifest" href="data:application/manifest+json,{
-    &quot;name&quot;:&quot;D2B1 - Rotation en ligne&quot;,
-    &quot;short_name&quot;:&quot;D2B1&quot;,
-    &quot;start_url&quot;:&quot;.&quot;,
-    &quot;display&quot;:&quot;standalone&quot;,
-    &quot;background_color&quot;:&quot;#004080&quot;,
-    &quot;theme_color&quot;:&quot;#004080&quot;,
-    &quot;icons&quot;:[
-      {&quot;src&quot;:&quot;icon-192.png&quot;, &quot;sizes&quot;:&quot;192x192&quot;, &quot;type&quot;:&quot;image/png&quot;},
-      {&quot;src&quot;:&quot;icon-512.png&quot;, &quot;sizes&quot;:&quot;512x512&quot;, &quot;type&quot;:&quot;image/png&quot;}
-    ]
-  }"/>
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAYAAACJ4C9RAAAACXBIWXMAAAsTAAALEwEAmpwYAAA...=="/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; background: #f0f4f9; padding: 20px; margin: 0; }
@@ -87,24 +76,18 @@ function checkAdminStep2() {
 }
 
 function forgotPassword() {
-  if (confirm("Envoyer un email de réinitialisation ?")) {
-    window.location.href = "mailto:emmanueljeambas@gmail.com?subject=Réinitialisation%20mot%20de%20passe";
-  }
+  window.location.href = "mailto:emmanueljeambas@gmail.com?subject=Réinitialisation%20mot%20de%20passe";
 }
 
 async function loadData() {
-  try {
-    const res = await fetch(`${API_URL}?action=get`);
-    const data = await res.json();
-    participants = data.participants || [];
-    history = data.history || [];
-    currentDay = history.length + 1;
-    renderParticipants();
-    renderHistory();
-    updateStats();
-  } catch (e) {
-    alert("Erreur de chargement");
-  }
+  const res = await fetch(`${API_URL}?action=get`);
+  const data = await res.json();
+  participants = data.participants || [];
+  history = data.history || [];
+  currentDay = history.length + 1;
+  renderParticipants();
+  renderHistory();
+  updateStats();
 }
 
 function renderParticipants() {
@@ -187,7 +170,7 @@ async function resetData() {
   alert("Données réinitialisées.");
 }
 
-// Simuler l’enregistrement PWA
+// Service Worker PWA
 if ('serviceWorker' in navigator) {
   const swBlob = new Blob([`
     const CACHE_NAME = 'd2b1-cache';
@@ -203,7 +186,7 @@ if ('serviceWorker' in navigator) {
   `], { type: "application/javascript" });
 
   const swUrl = URL.createObjectURL(swBlob);
-  navigator.serviceWorker.register(swUrl).then(() => console.log("SW en mémoire prêt"));
+  navigator.serviceWorker.register(swUrl).then(() => console.log("Service worker actif"));
 }
 </script>
 </body>
