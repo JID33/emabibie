@@ -2,10 +2,9 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>D2B1 - Rotation en ligne</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#004080" />
-  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAADgCAYAAACJ4C9RAAAACXBIWXMAAAsTAAALEwEAmpwYAAA...=="/>
+  <title>D2B1 - Authentification Sécurisée</title>
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; background: #f0f4f9; padding: 20px; margin: 0; }
@@ -18,24 +17,28 @@
     .btn-danger { background-color: #e74c3c; color: white; }
     .btn-primary { background-color: #004080; color: white; }
     .btn-secondary { background-color: #2980b9; color: white; }
-    #forgotSection { text-align: center; margin-top: 10px; font-size: 0.9em; color: #555; cursor: pointer; }
     @media (max-width: 600px) {
       input, button { font-size: 14px; padding: 8px; }
       table { font-size: 0.8em; }
     }
+    #forgotSection { text-align: center; margin-top: 10px; font-size: 0.9em; color: #555; cursor: pointer; }
   </style>
 </head>
 <body>
-  <h1>Système Rotatif Dream2Build1</h1>
+  <script>
+    emailjs.init("M1gXL-2NtM2UnmLXj");
+  </script>
 
+  <h1>D2B1 - Authentification Sécurisée</h1>
   <div class="card" id="authCard">
-    <input type="password" id="adminPass" placeholder="Mot de passe admin" autocomplete="current-password" />
+    <input type="password" id="adminPass" placeholder="Mot de passe admin" />
     <button onclick="checkAdminStep1()" class="btn-primary">🔐 Connexion</button>
-    <div id="forgotSection" onclick="forgotPassword()">Mot de passe oublié ?</div>
+    <div id="forgotSection" onclick="alert('Veuillez contacter l\\'administrateur pour réinitialiser votre mot de passe.')">Mot de passe oublié ?</div>
   </div>
 
   <div class="card" id="codeCard" style="display:none;">
-    <input type="text" id="code2FA" placeholder="Code de vérification (123456)" autocomplete="one-time-code" />
+    <p>📤 Code OTP envoyé par email et WhatsApp</p>
+    <input type="text" id="code2FA" placeholder="Entrez le code OTP" />
     <button onclick="checkAdminStep2()" class="btn-primary">✅ Vérifier</button>
   </div>
 
@@ -46,6 +49,7 @@
     <button onclick="nextDay()" class="btn-secondary">🔁 Jour Suivant</button>
     <button onclick="exportToExcel()" class="btn-primary">📤 Export Historique</button>
     <button onclick="resetData()" class="btn-danger">🗑️ Réinitialiser Données</button>
+    <button onclick="logout()" class="btn-danger">🚪 Déconnexion</button>
 
     <div id="stats" style="margin-top:20px;"></div>
     <div id="historyTable" style="margin-top:20px;"></div>
@@ -53,17 +57,37 @@
   </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzVSp0Mr7uRkJLqpOVloqaBJHmDCGK1zUgQPBRK5EqA4gzHsZF3KM2WLwkmIzD2kiI9/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby44bVHJV3oXXZ7OK7vl5NuOHQdiJDmjKvSve1GfZ-We3tG2ANyAV6X5l9jSR4ls8x0/exec";
 const ADMIN_PASSWORD = "d2b1admin";
 const SECOND_CODE = "123456";
-let participants = [], history = [], currentDay = 1;
+let participants = [];
+let history = [];
+let currentDay = 1;
+
+function sendOTPByEmail(code) {
+  emailjs.send("service_3gm6ixa", "template_tq202es", {
+    to_name: "Emmanuel",
+    to_email: "emmanueljeambas@gmail.com",
+    message: "Votre code de vérification est : " + code
+  });
+}
+
+function sendOTPByWhatsApp(code) {
+  const phone = "+50943260012";
+  const url = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=Votre+code+OTP+est+${code}&apikey=3854603`;
+  fetch(url).then(r => console.log("WhatsApp OTP envoyé")).catch(e => console.error("Erreur WhatsApp", e));
+}
 
 function checkAdminStep1() {
   const pass = document.getElementById("adminPass").value;
   if (pass === ADMIN_PASSWORD) {
     document.getElementById("authCard").style.display = "none";
     document.getElementById("codeCard").style.display = "block";
-  } else alert("Mot de passe incorrect");
+    sendOTPByEmail(SECOND_CODE);
+    sendOTPByWhatsApp(SECOND_CODE);
+  } else {
+    alert("Mot de passe incorrect");
+  }
 }
 
 function checkAdminStep2() {
@@ -72,11 +96,9 @@ function checkAdminStep2() {
     document.getElementById("codeCard").style.display = "none";
     document.getElementById("mainCard").style.display = "block";
     loadData();
-  } else alert("Code de vérification invalide");
-}
-
-function forgotPassword() {
-  window.location.href = "mailto:emmanueljeambas@gmail.com?subject=Réinitialisation%20mot%20de%20passe";
+  } else {
+    alert("Code de vérification invalide");
+  }
 }
 
 async function loadData() {
@@ -92,17 +114,20 @@ async function loadData() {
 
 function renderParticipants() {
   const ul = document.getElementById("participantsList");
-  ul.innerHTML = participants.length
-    ? "<h3>Participants</h3><ul>" + participants.map(p => `<li>Jour ${p.day} – ${p.name}</li>`).join('') + "</ul>"
-    : "<p>Aucun participant.</p>";
+  ul.innerHTML = "<h3>Participants</h3><ul>" +
+    participants.map(p => `<li>Jour ${p.day} – ${p.name}</li>`).join('') +
+    "</ul>";
 }
 
 function renderHistory() {
   const div = document.getElementById("historyTable");
-  if (!history.length) return div.innerHTML = "<p>Aucun historique.</p>";
+  if (history.length === 0) return div.innerHTML = "<p>Aucun historique.</p>";
   let html = "<h3>Historique</h3><table><tr><th>Jour</th><th>Bénéficiaire</th><th>Total</th><th>1/3</th><th>10%</th><th>Retenu</th><th>Payé</th><th>Date & Heure</th></tr>";
-  history.forEach(r => html += `<tr><td>${r.jour}</td><td>${r.beneficiary}</td><td>${r.total}</td><td>${r.oneThird}</td><td>${r.tenPercent}</td><td>${r.retained}</td><td>${r.payout}</td><td>${r.dateTime}</td></tr>`);
-  div.innerHTML = html + "</table>";
+  for (let row of history) {
+    html += `<tr><td>${row.jour}</td><td>${row.beneficiary}</td><td>${row.total}</td><td>${row.oneThird}</td><td>${row.tenPercent}</td><td>${row.retained}</td><td>${row.payout}</td><td>${row.dateTime}</td></tr>`;
+  }
+  html += "</table>";
+  div.innerHTML = html;
 }
 
 async function addParticipant() {
@@ -111,27 +136,38 @@ async function addParticipant() {
   const day = participants.length + 1;
   await fetch(API_URL, {
     method: "POST",
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: "addParticipant", name, day })
   });
+  await loadData();
   document.getElementById("participantName").value = "";
-  loadData();
 }
 
 async function validatePayments() {
-  if (!participants.length) return alert("Aucun participant");
-  const jour = currentDay, total = participants.length * 10;
-  const oneThird = total / 3, tenPercent = oneThird * 0.1;
-  const retained = oneThird - tenPercent, payout = total - retained;
+  if (participants.length === 0) return alert("Aucun participant");
+  const jour = history.length + 1;
+  const total = participants.length * 10;
+  const oneThird = total / 3;
+  const tenPercent = oneThird * 0.1;
+  const retained = oneThird - tenPercent;
+  const payout = total - retained;
   const beneficiary = participants[(jour - 1) % participants.length].name;
   const dateTime = new Date().toLocaleString("fr-FR", { hour12: false });
+
   await fetch(API_URL, {
     method: "POST",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: "addHistory", jour, beneficiary, total: total.toFixed(2), oneThird: oneThird.toFixed(2), tenPercent: tenPercent.toFixed(2), retained: retained.toFixed(2), payout: payout.toFixed(2), dateTime })
+    body: JSON.stringify({
+      action: "addHistory",
+      jour,
+      beneficiary,
+      total: total.toFixed(2),
+      oneThird: oneThird.toFixed(2),
+      tenPercent: tenPercent.toFixed(2),
+      retained: retained.toFixed(2),
+      payout: payout.toFixed(2),
+      dateTime
+    })
   });
-  currentDay++;
-  loadData();
+  await loadData();
 }
 
 function nextDay() {
@@ -141,17 +177,20 @@ function nextDay() {
 
 function updateStats() {
   const stats = document.getElementById("stats");
-  if (!participants.length) return stats.innerHTML = "<p>Aucune donnée</p>";
-  const jour = currentDay, total = participants.length * 10;
-  const oneThird = total / 3, tenPercent = oneThird * 0.1;
-  const retained = oneThird - tenPercent, payout = total - retained;
-  const beneficiary = participants[(jour - 1) % participants.length]?.name || "—";
+  if (participants.length === 0) return stats.innerHTML = "<p>Aucune donnée</p>";
+  const jour = history.length + 1;
+  const total = participants.length * 10;
+  const oneThird = total / 3;
+  const tenPercent = oneThird * 0.1;
+  const retained = oneThird - tenPercent;
+  const payout = total - retained;
+  const beneficiary = participants[(jour - 1) % participants.length].name;
   stats.innerHTML = `<strong>Jour ${jour} :</strong> ${beneficiary} (prévu)<br>
     Total: $${total.toFixed(2)}, 1/3: $${oneThird.toFixed(2)}, 10%: $${tenPercent.toFixed(2)}, Retenu: $${retained.toFixed(2)}, Payé: $${payout.toFixed(2)}`;
 }
 
 function exportToExcel() {
-  if (!history.length) return alert("Aucun historique");
+  if (history.length === 0) return alert("Aucun historique à exporter");
   const ws = XLSX.utils.json_to_sheet(history);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Historique");
@@ -159,34 +198,22 @@ function exportToExcel() {
 }
 
 async function resetData() {
-  if (!confirm("Réinitialiser toutes les données ?")) return;
+  if (!confirm("Confirmer la réinitialisation de toutes les données ?")) return;
   await fetch(API_URL, {
     method: "POST",
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: "resetAll" })
   });
-  participants = []; history = []; currentDay = 1;
-  renderParticipants(); renderHistory(); updateStats();
-  alert("Données réinitialisées.");
+  participants = [];
+  history = [];
+  currentDay = 1;
+  renderParticipants();
+  renderHistory();
+  updateStats();
+  alert("Toutes les données ont été réinitialisées.");
 }
 
-// Service Worker PWA
-if ('serviceWorker' in navigator) {
-  const swBlob = new Blob([`
-    const CACHE_NAME = 'd2b1-cache';
-    const urlsToCache = ['index.html'];
-
-    self.addEventListener('install', e => {
-      e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
-    });
-
-    self.addEventListener('fetch', e => {
-      e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
-    });
-  `], { type: "application/javascript" });
-
-  const swUrl = URL.createObjectURL(swBlob);
-  navigator.serviceWorker.register(swUrl).then(() => console.log("Service worker actif"));
+function logout() {
+  location.reload();
 }
 </script>
 </body>
