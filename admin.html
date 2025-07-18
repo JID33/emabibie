@@ -9,19 +9,20 @@
   <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, clean font */
-        background: linear-gradient to bottom, #e0eafc, #cfdef3; /* Soft gradient background */
+        background: linear-gradient(to bottom, #e0eafc, #cfdef3); /* Soft gradient background */
         padding: 20px;
         margin: 0;
         display: flex; /* Use flexbox to center the content vertically */
         justify-content: center; /* Center horizontally */
         align-items: center; /* Center vertically */
         min-height: 100vh; /* Take full viewport height */
+        box-sizing: border-box; /* Include padding in element's total width and height */
     }
     .card {
         background: white;
         padding: 30px; /* Increased padding */
         margin: 20px auto;
-        max-width: 450px; /* Slightly adjusted max-width for better balance */
+        max-width: 450px; /* Adjusted max-width for better balance */
         border-radius: 12px; /* More rounded corners */
         box-shadow: 0 4px 20px rgba(0,0,0,0.15); /* More prominent shadow */
         box-sizing: border-box; /* Ensure padding doesn't add to total width */
@@ -32,8 +33,8 @@
         margin-bottom: 25px; /* Added spacing below headings */
     }
 
-    input[type="password"], /* Target password input specifically */
-    input[type="text"] { /* Target text inputs for consistent styling */
+    input[type="password"],
+    input[type="text"] {
         width: 100%;
         padding: 12px 15px; /* More padding */
         margin-top: 15px; /* Increased margin */
@@ -52,7 +53,7 @@
         box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Subtle glow on focus */
     }
 
-    /* Flex container for buttons */
+    /* Button Group for Side-by-Side buttons (e.g., Auth & OTP screens) */
     .button-group {
         display: flex; /* Enable flexbox */
         justify-content: space-between; /* Distribute space between items */
@@ -61,8 +62,8 @@
         margin-bottom: 20px; /* Space below button group */
     }
 
+    /* Base style for all buttons */
     button {
-        flex-grow: 1; /* Allow buttons to grow and fill space */
         padding: 12px 20px; /* Consistent padding */
         font-size: 16px;
         cursor: pointer;
@@ -71,6 +72,7 @@
         transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Smooth transitions */
         text-align: center;
         white-space: nowrap; /* Prevent text wrapping */
+        box-sizing: border-box;
     }
 
     button:hover {
@@ -87,22 +89,28 @@
     .btn-secondary { background-color: #6c757d; color: white; } /* Updated secondary color */
     .btn-secondary:hover { background-color: #545b62; }
 
-    /* For admin page's main buttons */
+    /* Styles for the main action buttons in #mainCard and buttons within dynamic sections */
     #mainCard button,
-    #superviseurContainer button {
-        margin-bottom: 10px; /* Add some margin for stacking */
+    #superviseurContainer button,
+    .teamleaders button { /* Apply to all buttons that should stack vertically */
         display: block; /* Force them to stack vertically */
         width: 100%; /* Make them full width within their container */
+        margin-bottom: 10px; /* Add spacing between stacked buttons */
+        margin-top: 0; /* Reset margin-top from generic button rule if needed */
     }
 
-    /* Ensure supervisor/team leader add buttons are also full width */
-    .card .btn-primary, .card .btn-secondary {
-        /* This rule ensures buttons inside nested cards also behave well if they are the only element */
-        display: block;
-        width: 100%;
-        margin-bottom: 10px;
+    /* Correct spacing for buttons in button-group only */
+    .button-group button {
+        margin-top: 0; /* Reset margin-top for buttons inside flex container */
+        margin-bottom: 0; /* Reset margin-bottom for buttons inside flex container */
     }
 
+    /* Small adjustment for the text of the password strength message */
+    #passwordStrengthMessage {
+        text-align: left;
+        margin-top: -10px; /* Pull it closer to the input */
+        margin-bottom: 10px; /* Space before buttons */
+    }
 
     table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; border-radius: 8px; overflow: hidden; }
     th, td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; }
@@ -129,11 +137,6 @@
         color: #007bff;
     }
     .alert-red { color: red; font-weight: bold; }
-    #passwordStrengthMessage {
-        text-align: left;
-        margin-top: -10px; /* Pull it closer to the input */
-        margin-bottom: 10px; /* Space before buttons */
-    }
   </style>
 </head>
 <body>
@@ -193,18 +196,19 @@ function checkAdminStep2() {
   }
 }
 
-// Placeholder functions - these won't do anything on a static site without backend logic
-function addParticipant() { alert("Fonction addParticipant() à définir (nécessite un backend)"); }
-function validatePayments() { alert("Fonction validatePayments() à définir (nécessite un backend)"); }
-function nextDay() { alert("Fonction nextDay() à définir (nécessite un backend)"); }
-function exportToExcel() { alert("Fonction exportToExcel() à définir (nécessite un backend ou client-side Excel export)"); }
-function resetData() { alert("Fonction resetData() à définir (nécessite un backend)"); }
+// REMOVED alerts from placeholder functions, only console.log for clarity now.
+// IMPORTANT: These functions STILL REQUIRE A BACKEND for actual functionality.
+function addParticipant() { console.log("Action: Ajouter Participant"); }
+function validatePayments() { console.log("Action: Valider Paiement"); }
+function nextDay() { console.log("Action: Jour Suivant"); }
+function exportToExcel() { console.log("Action: Export Historique"); }
+function resetData() { console.log("Action: Réinitialiser Données"); }
 function logout() { location.reload(); }
 
 function ajouterSuperviseur() {
   const container = document.getElementById('superviseurs');
   const div = document.createElement('div');
-  div.className = 'card';
+  div.className = 'card'; // Using 'card' class for new superviseur container
   div.innerHTML = `
     <h4>Superviseur</h4>
     <input type="text" placeholder="Nom du superviseur" />
@@ -219,7 +223,7 @@ function ajouterSuperviseur() {
 function ajouterTeamLeader(btn) {
   const container = btn.nextElementSibling;
   const div = document.createElement('div');
-  div.className = 'card';
+  div.className = 'card team-leader-card'; // Add a specific class for team leader cards if you want unique styling later
   div.innerHTML = `
     <input type="text" placeholder="Nom du team leader" />
     <input type="text" placeholder="Nom du participant" />
@@ -233,7 +237,7 @@ function ajouterTeamLeader(btn) {
 
 function demanderAction(type) {
   const msg = type === 'reset' ? 'Demande de réinitialisation envoyée à l’administrateur' : 'Demande de déconnexion envoyée à l’administrateur';
-  alert(msg);
+  alert(msg); // Keep alert for these specific admin requests
 }
 </script>
 
