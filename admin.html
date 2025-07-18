@@ -202,6 +202,12 @@
         if (dateInput) {
             dateInput.value = today;
         }
+
+        // Add event listener for Enter key on Investment field
+        const investmentInput = document.getElementById("participantInvestment");
+        if (investmentInput) {
+            investmentInput.addEventListener("keyup", calculateGainOnEnter);
+        }
     });
 
     function saveParticipants() {
@@ -270,7 +276,7 @@
             passcode: code,
             time: formattedExpiryTime
         }).then(() => console.log("OTP envoyé par Email"))
-        .catch(err => alert("Erreur envoi Email: " + err.text)); // Keep alert for EmailJS errors
+        .catch(err => alert("Erreur envoi Email: " + err.text));
     }
 
     function checkAdminStep1() {
@@ -296,7 +302,7 @@
             document.getElementById("codeCard").style.display = "none";
             document.getElementById("mainCard").style.display = "block";
             document.getElementById("superviseurContainer").style.display = "block";
-            renderParticipantsTable(); // Render table after successful login
+            renderParticipantsTable();
         } else {
             alert("Code de vérification invalide");
         }
@@ -316,7 +322,7 @@
 
         const newParticipant = {
             name: name,
-            paymentValidated: false, // Default to not validated
+            paymentValidated: false,
             investment: investment,
             gain: gain,
             date: date
@@ -330,8 +336,7 @@
         document.getElementById("participantName").value = '';
         document.getElementById("participantInvestment").value = '';
         document.getElementById("participantGain").value = '';
-        // Date can remain as today's date or clear based on preference
-        // document.getElementById("participantDate").value = new Date().toISOString().split('T')[0];
+        // document.getElementById("participantDate").value = new Date().toISOString().split('T')[0]; // Can remain or clear
     }
 
     function togglePaymentValidation(index) {
@@ -353,12 +358,7 @@
     }
 
     function nextDay() {
-        // In a real backend scenario, this would trigger daily calculations, interest, etc.
-        // For localStorage, it mainly means re-rendering or potentially applying daily logic if implemented.
         alert("Action 'Jour Suivant' exécutée. (Fonctionnalité complète nécessite un backend)");
-        // Example: You could potentially add daily interest here if you calculate it client-side
-        // participants.forEach(p => p.gain += p.investment * 0.01); // Example: 1% daily gain
-        // saveParticipants();
         renderParticipantsTable();
     }
 
@@ -392,13 +392,32 @@
     function resetData() {
         if (confirm("ATTENTION : Ceci effacera TOUTES les données des participants. Êtes-vous sûr ?")) {
             localStorage.removeItem('d2b1_participants');
-            participants = []; // Clear array
-            renderParticipantsTable(); // Update table display
+            participants = [];
+            renderParticipantsTable();
             alert("Toutes les données des participants ont été réinitialisées.");
         }
     }
 
     function logout() { location.reload(); }
+
+    // --- NEW FUNCTION: Calculate Gain on Enter ---
+    function calculateGainOnEnter(event) {
+        if (event.key === "Enter") {
+            const investmentInput = document.getElementById("participantInvestment");
+            const gainInput = document.getElementById("participantGain");
+
+            const investment = parseFloat(investmentInput.value);
+
+            if (!isNaN(investment) && investment > 0) {
+                // Define your gain calculation logic here.
+                // For example, 10% of investment:
+                const calculatedGain = investment * 0.10; // Example: 10% gain
+                gainInput.value = calculatedGain.toFixed(2); // Display with 2 decimal places
+            } else {
+                gainInput.value = ''; // Clear gain if investment is invalid
+            }
+        }
+    }
 
     // --- Supervisor/Team Leader (Existing Placeholder Functions) ---
     function ajouterSuperviseur() {
@@ -436,7 +455,7 @@
         alert(msg);
     }
 
-    // --- Password Strength Check (Existing) ---
+    // --- Password Strength Check (Existing - moved to end for readability) ---
     function checkPasswordStrength() {
         const password = document.getElementById("adminPass").value;
         const messageElement = document.getElementById("passwordStrengthMessage");
@@ -475,18 +494,21 @@
 </div>
 
 <div class="card" id="mainCard" style="display:none;">
-    <h3>D2B1 - Gestion des Participants</h3> <input type="text" id="participantName" placeholder="Nom du participant" />
+    <h3>D2B1 - Gestion des Participants</h3>
+
+    <input type="text" id="participantName" placeholder="Nom du participant" />
     <input type="number" id="participantInvestment" placeholder="Investissement (€)" step="0.01" />
-    <input type="number" id="participantGain" placeholder="Gain (€)" step="0.01" />
-    <input type="date" id="participantDate" /> <button onclick="addParticipant()" class="btn-primary">➕ Ajouter Participant</button>
-    
+    <input type="number" id="participantGain" placeholder="Gain (€)" step="0.01" readonly /> <input type="date" id="participantDate" />
+
+    <button onclick="addParticipant()" class="btn-primary">➕ Ajouter Participant</button>
+
     <button onclick="nextDay()" class="btn-secondary">🔁 Jour Suivant</button>
     <button onclick="exportToExcel()" class="btn-primary">📤 Export Historique</button>
     <button onclick="resetData()" class="btn-danger">🗑️ Réinitialiser Données</button>
     <button onclick="logout()" class="btn-danger">🚪 Déconnexion</button>
-    
+
     <div id="stats" style="margin-top:20px;"></div>
-    
+
     <div id="historyTable" style="margin-top:20px;">
         <h4>Historique des Participants</h4>
         <table>
@@ -506,7 +528,7 @@
                 </tbody>
         </table>
     </div>
-    
+
     <div id="participantsList" style="margin-top:20px;"></div>
 </div>
 
@@ -516,23 +538,5 @@
     <div id="superviseurs"></div>
 </div>
 
-<script>
-    // --- Password Strength Check (Existing - moved to end for readability) ---
-    function checkPasswordStrength() {
-        const password = document.getElementById("adminPass").value;
-        const messageElement = document.getElementById("passwordStrengthMessage");
-
-        if (password === SECURE_ADMIN_PASSWORD) {
-            messageElement.textContent = "Mot de passe correct.";
-            messageElement.style.color = "green";
-        } else if (isValidAdminPassword(password)) {
-            messageElement.textContent = "Mot de passe fort (mais incorrect).";
-            messageElement.style.color = "orange";
-        } else {
-            messageElement.textContent = "Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.";
-            messageElement.style.color = "red";
-        }
-    }
-</script>
 </body>
 </html>
