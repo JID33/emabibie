@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en"> <head>
+<html lang="en">
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>D2B1 - Secure Administration</title>
+    <title data-translate="D2B1 - Secure Administration">D2B1 - Secure Administration</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -36,7 +37,7 @@
         input[type="text"],
         input[type="number"],
         input[type="date"],
-        select { /* Added select for payment method */
+        select {
             width: 100%;
             padding: 12px 15px;
             margin-top: 15px;
@@ -95,12 +96,22 @@
 
         #mainCard button,
         #superviseurContainer button,
-        .teamleaders button {
+        .teamleaders button,
+        .rotation-calculator-section button { /* Added new section button */
             display: block;
             width: 100%;
             margin-bottom: 10px;
             margin-top: 0;
         }
+        /* Specific styling for the add participant in rotation button */
+        #addParticipantInRotationBtn {
+            background-color: #28a745; /* Green color */
+            color: white;
+        }
+        #addParticipantInRotationBtn:hover {
+            background-color: #218838;
+        }
+
 
         .button-group button {
             margin-top: 0;
@@ -196,6 +207,8 @@
     let otpCode = "";
     const SECURE_ADMIN_PASSWORD = "D2B1@dmin2025";
     let participants = []; // Array to hold participant data
+    let rotationParticipantsCount = 0; // Counter for rotation
+    let totalInvestmentInRotation = 0; // Sum of investments for current rotation
 
     // --- Language Translation Data ---
     const translations = {
@@ -238,8 +251,8 @@
             "No participant recorded.": "No participant recorded.",
             "Please fill all fields (Name, Investment, Gain, Date) with valid values.": "Please fill all fields (Name, Investment, Gain, Date) with valid values.",
             "Are you sure you want to delete this participant?": "Are you sure you want to delete this participant?",
-            "Cancel Payment": "Annuler Paiement",
-            "Delete": "Supprimer",
+            "Cancel Payment": "Cancel Payment",
+            "Delete": "Delete",
 
             // Main Card specific
             "Add Participant": "➕ Add Participant",
@@ -254,8 +267,22 @@
             "Export History": "📤 Export History",
             "Reset Data": "🗑️ Reset Data",
             "Logout": "🚪 Logout",
-            "Participant Name (for TL)": "Participant Name (for TL)", // for dynamic team leader cards
-            "Payment Method": "Payment Method"
+            "Participant Name (for TL)": "Participant Name (for TL)",
+            "Payment Method": "Payment Method",
+            "N°": "N°",
+            "Name": "Name",
+            "Date": "Date",
+
+            // New rotation specific
+            "Rotation Gain Calculator": "Rotation Gain Calculator",
+            "Total Investment (for 10 participants)": "Total Investment (for 10 participants)",
+            "Calculated Gain (for Winner)": "Calculated Gain (for Winner)",
+            "Calculate Gain": "🧮 Calculate Gain",
+            "Add Participant in Rotation": "🔄 Add Participant in Rotation",
+            "Participant added to rotation. Current count:": "Participant added to rotation. Current count:",
+            "Winner! Gain for this rotation:": "Winner! Gain for this rotation:",
+            "No winner this time.": "No winner this time.",
+            "Must be a number 10 or more.": "Must be a number 10 or more."
         },
         fr: {
             // General
@@ -313,7 +340,21 @@
             "Reset Data": "🗑️ Réinitialiser Données",
             "Logout": "🚪 Déconnexion",
             "Participant Name (for TL)": "Nom du participant (pour TL)",
-            "Payment Method": "Méthode de Paiement"
+            "Payment Method": "Méthode de Paiement",
+            "N°": "N°",
+            "Name": "Nom",
+            "Date": "Date",
+
+            // New rotation specific
+            "Rotation Gain Calculator": "Calculateur de Gain de Rotation",
+            "Total Investment (for 10 participants)": "Investissement Total (pour 10 participants)",
+            "Calculated Gain (for Winner)": "Gain Calculé (pour le Gagnant)",
+            "Calculate Gain": "🧮 Calculer le Gain",
+            "Add Participant in Rotation": "🔄 Ajouter Participant en Rotation",
+            "Participant added to rotation. Current count:": "Participant ajouté à la rotation. Compte actuel :",
+            "Winner! Gain for this rotation:": "Gagnant ! Gain pour cette rotation :",
+            "No winner this time.": "Pas de gagnant cette fois-ci.",
+            "Must be a number 10 or more.": "Doit être un nombre de 10 ou plus."
         }
     };
 
@@ -330,26 +371,22 @@
     }
 
     function applyTranslations() {
-        // Translate static text
         document.querySelectorAll('[data-translate]').forEach(element => {
             const key = element.getAttribute('data-translate');
             element.textContent = translateText(key);
         });
 
-        // Translate placeholders
         document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
             const key = element.getAttribute('data-translate-placeholder');
             element.placeholder = translateText(key);
         });
 
-        // Translate values (for specific cases like buttons that change text)
         document.querySelectorAll('[data-translate-value]').forEach(element => {
             const key = element.getAttribute('data-translate-value');
             element.value = translateText(key);
         });
 
-        // Update titles
-        document.title = translateText(document.title); // Update main title
+        document.title = translateText(document.title);
         if (document.getElementById('mainCard')) {
             document.getElementById('mainCard').querySelector('h3').textContent = translateText("D2B1 - Participant Management");
         }
@@ -362,6 +399,9 @@
         if (document.getElementById('superviseurContainer')) {
              document.getElementById('superviseurContainer').querySelector('h3').textContent = translateText("Add Supervisor");
         }
+        if (document.getElementById('rotationCalculatorSection')) {
+            document.getElementById('rotationCalculatorSection').querySelector('h4').textContent = translateText("Rotation Gain Calculator");
+        }
 
 
         // Re-render table to apply translations to dynamic content (like button texts)
@@ -370,8 +410,6 @@
 
 
     // --- Data Storage and Management ---
-    let participants = []; // Array to hold participant data
-
     document.addEventListener('DOMContentLoaded', () => {
         loadParticipants();
         const today = new Date().toISOString().split('T')[0];
@@ -385,7 +423,15 @@
             investmentInput.addEventListener("keyup", calculateGainOnEnter);
         }
 
-        // Initialize language selector and apply initial translations
+        const rotationInvestmentInput = document.getElementById("rotationTotalInvestment");
+        if (rotationInvestmentInput) {
+            rotationInvestmentInput.addEventListener("keyup", (event) => {
+                if (event.key === "Enter") {
+                    calculateRotationGain();
+                }
+            });
+        }
+
         const langSelector = document.getElementById('languageSelector');
         if (langSelector) {
             langSelector.value = currentLanguage;
@@ -393,11 +439,13 @@
                 setLanguage(event.target.value);
             });
         }
-        applyTranslations(); // Apply translations on load
+        applyTranslations();
     });
 
     function saveParticipants() {
         localStorage.setItem('d2b1_participants', JSON.stringify(participants));
+        localStorage.setItem('rotationParticipantsCount', rotationParticipantsCount);
+        localStorage.setItem('totalInvestmentInRotation', totalInvestmentInRotation);
     }
 
     function loadParticipants() {
@@ -407,6 +455,8 @@
         } else {
             participants = [];
         }
+        rotationParticipantsCount = parseInt(localStorage.getItem('rotationParticipantsCount') || '0');
+        totalInvestmentInRotation = parseFloat(localStorage.getItem('totalInvestmentInRotation') || '0');
         renderParticipantsTable();
     }
 
@@ -417,7 +467,7 @@
         tableBody.innerHTML = '';
 
         if (participants.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="8" data-translate="No participant recorded.">${translateText("No participant recorded.")}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="9" data-translate="No participant recorded.">${translateText("No participant recorded.")}</td></tr>`;
             return;
         }
 
@@ -433,6 +483,7 @@
                 <td>${p.gain.toFixed(2)}</td>
                 <td>${p.date}</td>
                 <td>${(p.investment + p.gain).toFixed(2)}</td>
+                <td>${p.paymentMethod}</td>
                 <td class="table-actions">
                     <button onclick="togglePaymentValidation(${index})" class="${p.paymentValidated ? 'btn-secondary' : 'btn-primary'}">
                         ${p.paymentValidated ? translateText('Cancel Payment') : translateText('Validate Payment')}
@@ -494,13 +545,13 @@
         }
     }
 
-    // --- Main Admin Actions ---
+    // --- Main Admin Actions (Participant Management) ---
     function addParticipant() {
         const name = document.getElementById("participantName").value.trim();
         const investment = parseFloat(document.getElementById("participantInvestment").value);
         const gain = parseFloat(document.getElementById("participantGain").value);
         const date = document.getElementById("participantDate").value;
-        const paymentMethod = document.getElementById("paymentMethod").value; // Get payment method
+        const paymentMethod = document.getElementById("paymentMethod").value;
 
         if (!name || isNaN(investment) || isNaN(gain) || !date) {
             alert(translateText("Please fill all fields (Name, Investment, Gain, Date) with valid values."));
@@ -513,7 +564,7 @@
             investment: investment,
             gain: gain,
             date: date,
-            paymentMethod: paymentMethod // Store payment method
+            paymentMethod: paymentMethod
         };
 
         participants.push(newParticipant);
@@ -544,20 +595,8 @@
     }
 
     function nextDay() {
-        // This function would conceptually advance the "day" for all participants.
-        // For a client-side solution, this means you can implement daily calculations here.
-        // Example: Apply a daily interest/gain rate to all participants.
-        // For now, it's an alert to indicate a backend would handle this fully.
-
-        // Example (uncomment to activate a simple daily gain):
-        // participants.forEach(p => {
-        //     if (p.paymentValidated) { // Only apply gain if payment is validated
-        //         p.gain += p.investment * 0.005; // Example: 0.5% daily gain on investment
-        //     }
-        // });
-        // saveParticipants();
-        renderParticipantsTable(); // Re-render table to show any changes from daily logic
         alert(translateText("Action 'Next Day' executed. (Full functionality requires a backend)"));
+        renderParticipantsTable();
     }
 
     function exportToExcel() {
@@ -567,7 +606,7 @@
         }
 
         const data = [
-            [translateText("N°"), translateText("Nom"), translateText("Paiement Validé"), translateText("Investissement (€)"), translateText("Gain (€)"), translateText("Date"), translateText("Total (€)"), translateText("Payment Method")]
+            [translateText("N°"), translateText("Name"), translateText("Payment Validated"), translateText("Investment (€)"), translateText("Gain (€)"), translateText("Date"), translateText("Total (€)"), translateText("Payment Method")]
         ];
         participants.forEach((p, index) => {
             data.push([
@@ -578,7 +617,7 @@
                 p.gain,
                 p.date,
                 p.investment + p.gain,
-                p.paymentMethod // Add payment method to export
+                p.paymentMethod
             ]);
         });
 
@@ -591,7 +630,11 @@
     function resetData() {
         if (confirm(translateText("ATTENTION: This will erase ALL participant data. Are you sure?"))) {
             localStorage.removeItem('d2b1_participants');
+            localStorage.removeItem('rotationParticipantsCount');
+            localStorage.removeItem('totalInvestmentInRotation');
             participants = [];
+            rotationParticipantsCount = 0;
+            totalInvestmentInRotation = 0;
             renderParticipantsTable();
             alert(translateText("All participant data has been reset."));
         }
@@ -607,14 +650,100 @@
             const investment = parseFloat(investmentInput.value);
 
             if (!isNaN(investment) && investment > 0) {
-                // Define your gain calculation logic here.
-                const calculatedGain = investment * 0.10; // Example: 10% gain
+                // This is the individual gain, not the rotation calculation.
+                // Keep it simple, e.g., 10% for individual gain
+                const calculatedGain = investment * 0.10;
                 gainInput.value = calculatedGain.toFixed(2);
             } else {
                 gainInput.value = '';
             }
         }
     }
+
+    // --- Rotation Specific Functions ---
+    function calculateRotationGain() {
+        const totalInvestmentInput = document.getElementById("rotationTotalInvestment");
+        const calculatedGainOutput = document.getElementById("calculatedRotationGain");
+        const totalInvestment = parseFloat(totalInvestmentInput.value);
+
+        if (isNaN(totalInvestment) || totalInvestment < 10) { // Assuming min 10 for total as per "10 people x $10"
+            calculatedGainOutput.value = '';
+            alert(translateText("Must be a number 10 or more.")); // Corrected alert
+            return;
+        }
+
+        // Apply the rotation logic as clarified: (N - N/3) + 0.3
+        const gain = (totalInvestment - (totalInvestment / 3)) + 0.3;
+        calculatedGainOutput.value = gain.toFixed(2); // Format to 2 decimal places
+    }
+
+    function addParticipantInRotation() {
+        const name = document.getElementById("participantName").value.trim();
+        const investment = parseFloat(document.getElementById("participantInvestment").value);
+        const date = document.getElementById("participantDate").value;
+        const paymentMethod = document.getElementById("paymentMethod").value;
+
+        if (!name || isNaN(investment) || !date) {
+            alert(translateText("Please fill all fields (Name, Investment, Date) with valid values."));
+            return;
+        }
+
+        // Add participant to the main participants list
+        const newParticipant = {
+            name: name,
+            paymentValidated: false, // Default for individual participant tracking
+            investment: investment,
+            gain: 0, // Gain for individual participant is 0 until they win the rotation
+            date: date,
+            paymentMethod: paymentMethod
+        };
+        participants.push(newParticipant);
+
+        // Update rotation specific counters
+        rotationParticipantsCount++;
+        totalInvestmentInRotation += investment;
+
+        saveParticipants();
+        renderParticipantsTable(); // Re-render the main table
+
+        // Check for winner condition
+        if (rotationParticipantsCount >= 10) {
+            // Find the winner (e.g., the 10th person added, or highest investor, etc.)
+            // For simplicity, let's assume the 10th person added is the winner for this specific rotation logic.
+            // Or, more accurately based on your sample: it's a "group gain" for *one* winner from the group.
+            // The problem statement says "one person wins a sum", so we need to select that person.
+            // For demonstration, let's assume the winner is simply the last person added to complete the 10.
+            const winnerIndex = participants.length - 1; // The 10th participant added
+            const winnerParticipant = participants[winnerIndex];
+
+            // Calculate the total gain for this rotation
+            const rotationGain = (totalInvestmentInRotation - (totalInvestmentInRotation / 3)) + 0.3;
+
+            // Assign the calculated gain to the winner
+            if (winnerParticipant) {
+                winnerParticipant.gain = rotationGain;
+                alert(`${translateText("Winner! Gain for this rotation:")} ${rotationGain.toFixed(2)} ${winnerParticipant.paymentMethod} for ${winnerParticipant.name}!`);
+            } else {
+                 alert(translateText("No winner this time.")); // Should not happen if count is 10
+            }
+
+
+            // Reset rotation counters for the next round of 10
+            rotationParticipantsCount = 0;
+            totalInvestmentInRotation = 0;
+
+            saveParticipants(); // Save after updating winner's gain and resetting counters
+            renderParticipantsTable(); // Re-render to show winner's updated gain
+        } else {
+            alert(`${translateText("Participant added to rotation. Current count:")} ${rotationParticipantsCount}/10`);
+        }
+
+        // Clear inputs after adding to rotation
+        document.getElementById("participantName").value = '';
+        document.getElementById("participantInvestment").value = '';
+        document.getElementById("participantGain").value = ''; // Clear auto-calculated gain too
+    }
+
 
     // --- Supervisor/Team Leader (Modified Functions for History) ---
     function ajouterSuperviseur() {
@@ -632,9 +761,9 @@
                     <thead>
                         <tr>
                             <th data-translate="N°">${translateText("N°")}</th>
-                            <th data-translate="Nom">${translateText("Nom")}</th>
+                            <th data-translate="Name">${translateText("Name")}</th>
                             <th data-translate="Paiement Validé">${translateText("Paiement Validé")}</th>
-                            <th data-translate="Investissement (€)">${translateText("Investissement (€)")}</th>
+                            <th data-translate="Investment (€)">${translateText("Investment (€)")}</th>
                             <th data-translate="Gain (€)">${translateText("Gain (€)")}</th>
                             <th data-translate="Date">${translateText("Date")}</th>
                             <th data-translate="Total (€)">${translateText("Total (€)")}</th>
@@ -669,9 +798,9 @@
                     <thead>
                         <tr>
                             <th data-translate="N°">${translateText("N°")}</th>
-                            <th data-translate="Nom">${translateText("Nom")}</th>
+                            <th data-translate="Name">${translateText("Name")}</th>
                             <th data-translate="Paiement Validé">${translateText("Paiement Validé")}</th>
-                            <th data-translate="Investissement (€)">${translateText("Investissement (€)")}</th>
+                            <th data-translate="Investment (€)">${translateText("Investment (€)")}</th>
                             <th data-translate="Gain (€)">${translateText("Gain (€)")}</th>
                             <th data-translate="Date">${translateText("Date")}</th>
                             <th data-translate="Total (€)">${translateText("Total (€)")}</th>
@@ -687,7 +816,6 @@
         renderTeamLeaderHistory(div.querySelector('.teamleader-history-body')); // Render history for new team leader
     }
 
-    // New function to render history for supervisor/team leader cards
     function renderSupervisorHistory(tableBodyElement) {
         if (!tableBodyElement) return;
 
@@ -714,22 +842,17 @@
         });
     }
 
-    // Separate function for Team Leader history (same logic, but ensures it's called for the correct tbody)
     function renderTeamLeaderHistory(tableBodyElement) {
-        renderSupervisorHistory(tableBodyElement); // Re-use the same rendering logic for now
+        renderSupervisorHistory(tableBodyElement);
     }
 
-
-    // Placeholder for TL-specific next day (can be specialized later)
     function nextDayTL() {
-        nextDay(); // Call the main nextDay logic
+        nextDay();
     }
 
-    // Placeholder for TL-specific export (can be specialized later)
     function exportToExcelTL() {
-        exportToExcel(); // Call the main export logic
+        exportToExcel();
     }
-
 
     function demanderAction(type) {
         const msg = type === 'reset' ? translateText('Request for reset sent to administrator') : translateText('Request for logout sent to administrator');
@@ -794,12 +917,20 @@
         <option value="EUR">EUR - Euro</option>
         <option value="CAD">CAD - Canadian Dollar</option>
         <option value="GBP">GBP - British Pound</option>
-        </select>
+    </select>
     
     <input type="number" id="participantGain" data-translate-placeholder="Gain (€)" placeholder="Gain (€)" step="0.01" readonly />
     <input type="date" id="participantDate" />
 
-    <button onclick="addParticipant()" class="btn-primary" data-translate="Add Participant">➕ Add Participant</button>
+    <button onclick="addParticipant()" class="btn-primary" data-translate="Add Participant">➕ Add Participant (Normal)</button>
+    <button onclick="addParticipantInRotation()" id="addParticipantInRotationBtn" data-translate="Add Participant in Rotation">🔄 Add Participant in Rotation</button>
+
+    <div class="rotation-calculator-section">
+        <h4 data-translate="Rotation Gain Calculator">Rotation Gain Calculator</h4>
+        <input type="number" id="rotationTotalInvestment" data-translate-placeholder="Total Investment (for 10 participants)" placeholder="Total Investment (for 10 participants)" step="0.01" />
+        <input type="number" id="calculatedRotationGain" data-translate-placeholder="Calculated Gain (for Winner)" placeholder="Calculated Gain (for Winner)" step="0.01" readonly />
+        <button onclick="calculateRotationGain()" class="btn-primary" data-translate="Calculate Gain">🧮 Calculate Gain</button>
+    </div>
 
     <button onclick="nextDay()" class="btn-secondary" data-translate="Next Day">🔁 Next Day</button>
     <button onclick="exportToExcel()" class="btn-primary" data-translate="Export History">📤 Export History</button>
@@ -814,13 +945,14 @@
             <thead>
                 <tr>
                     <th data-translate="N°">N°</th>
-                    <th data-translate="Nom">Nom</th>
+                    <th data-translate="Name">Name</th>
                     <th data-translate="Paiement Validé">Paiement Validé</th>
-                    <th data-translate="Investissement (€)">Investissement (€)</th>
+                    <th data-translate="Investment (€)">Investment (€)</th>
                     <th data-translate="Gain (€)">Gain (€)</th>
-                    <th>Date</th>
+                    <th data-translate="Date">Date</th>
                     <th data-translate="Total (€)">Total (€)</th>
-                    <th data-translate="Payment Method">Payment Method</th> <th data-translate="Actions">Actions</th>
+                    <th data-translate="Payment Method">Payment Method</th>
+                    <th data-translate="Actions">Actions</th>
                 </tr>
             </thead>
             <tbody id="participantsTableBody">
