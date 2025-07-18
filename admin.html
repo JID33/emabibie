@@ -97,21 +97,19 @@
         #mainCard button,
         #superviseurContainer button,
         .teamleaders button,
-        .rotation-calculator-section button { /* Added new section button */
+        .rotation-calculator-section button {
             display: block;
             width: 100%;
             margin-bottom: 10px;
             margin-top: 0;
         }
-        /* Specific styling for the add participant in rotation button */
         #addParticipantInRotationBtn {
-            background-color: #28a745; /* Green color */
+            background-color: #28a745;
             color: white;
         }
         #addParticipantInRotationBtn:hover {
             background-color: #218838;
         }
-
 
         .button-group button {
             margin-top: 0;
@@ -206,9 +204,11 @@
 
     let otpCode = "";
     const SECURE_ADMIN_PASSWORD = "D2B1@dmin2025";
-    let participants = []; // Array to hold participant data
-    let rotationParticipantsCount = 0; // Counter for rotation
-    let totalInvestmentInRotation = 0; // Sum of investments for current rotation
+    let participants = []; // Global array to hold all participants
+
+    // Rotation specific state variables
+    let rotationMembersQueue = []; // Temporarily holds participants for the current 10-person or 2-person batch
+    let rolloverFund = 0; // Amount that carries over from previous rotation
 
     // --- Language Translation Data ---
     const translations = {
@@ -255,7 +255,7 @@
             "Delete": "Delete",
 
             // Main Card specific
-            "Add Participant": "➕ Add Participant",
+            "Add Participant (Normal)": "➕ Add Participant (Normal)",
             "Investment (€)": "Investment (€)",
             "Gain (€)": "Gain (€)",
             "Participant History": "Participant History",
@@ -282,7 +282,9 @@
             "Participant added to rotation. Current count:": "Participant added to rotation. Current count:",
             "Winner! Gain for this rotation:": "Winner! Gain for this rotation:",
             "No winner this time.": "No winner this time.",
-            "Must be a number 10 or more.": "Must be a number 10 or more."
+            "Must be a number 10 or more.": "Must be a number 10 or more.",
+            "Please fill all fields (Name, Investment, Date) with valid values.": "Please fill all fields (Name, Investment, Date) with valid values.",
+            " for this winner cycle.": " for this winner cycle."
         },
         fr: {
             // General
@@ -327,7 +329,7 @@
             "Delete": "Supprimer",
 
             // Main Card specific
-            "Add Participant": "➕ Ajouter Participant",
+            "Add Participant (Normal)": "➕ Ajouter Participant (Normal)",
             "Investment (€)": "Investissement (€)",
             "Gain (€)": "Gain (€)",
             "Participant History": "Historique des Participants",
@@ -354,11 +356,13 @@
             "Participant added to rotation. Current count:": "Participant ajouté à la rotation. Compte actuel :",
             "Winner! Gain for this rotation:": "Gagnant ! Gain pour cette rotation :",
             "No winner this time.": "Pas de gagnant cette fois-ci.",
-            "Must be a number 10 or more.": "Doit être un nombre de 10 ou plus."
+            "Must be a number 10 or more.": "Doit être un nombre de 10 ou plus.",
+            "Please fill all fields (Name, Investment, Date) with valid values.": "Veuillez remplir tous les champs (Nom, Investissement, Date) avec des valeurs valides.",
+            " for this winner cycle.": " pour ce cycle de gagnant."
         }
     };
 
-    let currentLanguage = localStorage.getItem('language') || 'en'; // Load saved language, default to 'en'
+    let currentLanguage = localStorage.getItem('language') || 'en';
 
     function setLanguage(lang) {
         currentLanguage = lang;
@@ -403,11 +407,8 @@
             document.getElementById('rotationCalculatorSection').querySelector('h4').textContent = translateText("Rotation Gain Calculator");
         }
 
-
-        // Re-render table to apply translations to dynamic content (like button texts)
-        renderParticipantsTable();
+        renderParticipantsTable(); // Re-render table to apply translations to dynamic content
     }
-
 
     // --- Data Storage and Management ---
     document.addEventListener('DOMContentLoaded', () => {
@@ -444,19 +445,27 @@
 
     function saveParticipants() {
         localStorage.setItem('d2b1_participants', JSON.stringify(participants));
-        localStorage.setItem('rotationParticipantsCount', rotationParticipantsCount);
-        localStorage.setItem('totalInvestmentInRotation', totalInvestmentInRotation);
+        localStorage.setItem('rotationMembersQueue', JSON.stringify(rotationMembersQueue));
+        localStorage.setItem('rolloverFund', rolloverFund);
     }
 
     function loadParticipants() {
-        const storedData = localStorage.getItem('d2b1_participants');
-        if (storedData) {
-            participants = JSON.parse(storedData);
+        const storedParticipants = localStorage.getItem('d2b1_participants');
+        if (storedParticipants) {
+            participants = JSON.parse(storedParticipants);
         } else {
             participants = [];
         }
-        rotationParticipantsCount = parseInt(localStorage.getItem('rotationParticipantsCount') || '0');
-        totalInvestmentInRotation = parseFloat(localStorage.getItem('totalInvestmentInRotation') || '0');
+
+        const storedRotationQueue = localStorage.getItem('rotationMembersQueue');
+        if (storedRotationQueue) {
+            rotationMembersQueue = JSON.parse(storedRotationQueue);
+        } else {
+            rotationMembersQueue = [];
+        }
+
+        rolloverFund = parseFloat(localStorage.getItem('rolloverFund') || '0');
+
         renderParticipantsTable();
     }
 
@@ -559,6 +568,7 @@
         }
 
         const newParticipant = {
+            id: Date.now(), // Unique ID for finding participants in global array
             name: name,
             paymentValidated: false,
             investment: investment,
@@ -587,6 +597,10 @@
     function deleteParticipant(index) {
         if (confirm(translateText("Are you sure you want to delete this participant?"))) {
             if (index >= 0 && index < participants.length) {
+                // When deleting, also check if they are in the rotation queue
+                const deletedParticipantId = participants[index].id;
+                rotationMembersQueue = rotationMembersQueue.filter(p => p.id !== deletedParticipantId);
+
                 participants.splice(index, 1);
                 saveParticipants();
                 renderParticipantsTable();
@@ -630,11 +644,12 @@
     function resetData() {
         if (confirm(translateText("ATTENTION: This will erase ALL participant data. Are you sure?"))) {
             localStorage.removeItem('d2b1_participants');
-            localStorage.removeItem('rotationParticipantsCount');
-            localStorage.removeItem('totalInvestmentInRotation');
+            localStorage.removeItem('rotationMembersQueue');
+            localStorage.removeItem('rolloverFund');
+
             participants = [];
-            rotationParticipantsCount = 0;
-            totalInvestmentInRotation = 0;
+            rotationMembersQueue = [];
+            rolloverFund = 0;
             renderParticipantsTable();
             alert(translateText("All participant data has been reset."));
         }
@@ -650,9 +665,7 @@
             const investment = parseFloat(investmentInput.value);
 
             if (!isNaN(investment) && investment > 0) {
-                // This is the individual gain, not the rotation calculation.
-                // Keep it simple, e.g., 10% for individual gain
-                const calculatedGain = investment * 0.10;
+                const calculatedGain = investment * 0.10; // Simple 10% gain for individual
                 gainInput.value = calculatedGain.toFixed(2);
             } else {
                 gainInput.value = '';
@@ -666,15 +679,15 @@
         const calculatedGainOutput = document.getElementById("calculatedRotationGain");
         const totalInvestment = parseFloat(totalInvestmentInput.value);
 
-        if (isNaN(totalInvestment) || totalInvestment < 10) { // Assuming min 10 for total as per "10 people x $10"
+        if (isNaN(totalInvestment) || totalInvestment < 10) {
             calculatedGainOutput.value = '';
-            alert(translateText("Must be a number 10 or more.")); // Corrected alert
+            alert(translateText("Must be a number 10 or more."));
             return;
         }
 
         // Apply the rotation logic as clarified: (N - N/3) + 0.3
         const gain = (totalInvestment - (totalInvestment / 3)) + 0.3;
-        calculatedGainOutput.value = gain.toFixed(2); // Format to 2 decimal places
+        calculatedGainOutput.value = gain.toFixed(2);
     }
 
     function addParticipantInRotation() {
@@ -688,64 +701,73 @@
             return;
         }
 
-        // Add participant to the main participants list
         const newParticipant = {
+            id: Date.now(), // Assign a unique ID
             name: name,
-            paymentValidated: false, // Default for individual participant tracking
+            paymentValidated: false,
             investment: investment,
-            gain: 0, // Gain for individual participant is 0 until they win the rotation
+            gain: 0, // Initial gain is 0, will be updated if they win
             date: date,
             paymentMethod: paymentMethod
         };
+
+        // Add participant to the global list and to the current rotation queue
         participants.push(newParticipant);
+        rotationMembersQueue.push(newParticipant);
 
-        // Update rotation specific counters
-        rotationParticipantsCount++;
-        totalInvestmentInRotation += investment;
-
-        saveParticipants();
+        saveParticipants(); // Save updated global list and rotation queue
         renderParticipantsTable(); // Re-render the main table
 
-        // Check for winner condition
-        if (rotationParticipantsCount >= 10) {
-            // Find the winner (e.g., the 10th person added, or highest investor, etc.)
-            // For simplicity, let's assume the 10th person added is the winner for this specific rotation logic.
-            // Or, more accurately based on your sample: it's a "group gain" for *one* winner from the group.
-            // The problem statement says "one person wins a sum", so we need to select that person.
-            // For demonstration, let's assume the winner is simply the last person added to complete the 10.
-            const winnerIndex = participants.length - 1; // The 10th participant added
-            const winnerParticipant = participants[winnerIndex];
+        let currentBatchSize = rotationMembersQueue.length;
+        let isWinningConditionMet = false;
 
-            // Calculate the total gain for this rotation
-            const rotationGain = (totalInvestmentInRotation - (totalInvestmentInRotation / 3)) + 0.3;
+        // Condition for winning: First 10, then every 2
+        // If total participants in the global list is <= 10, we're in the initial 10-person phase.
+        // If total participants > 10, we're in the subsequent 2-person phases.
+        if (participants.length <= 10 && currentBatchSize === 10) {
+            isWinningConditionMet = true;
+        } else if (participants.length > 10 && currentBatchSize === 2) {
+            isWinningConditionMet = true;
+        }
 
-            // Assign the calculated gain to the winner
-            if (winnerParticipant) {
-                winnerParticipant.gain = rotationGain;
-                alert(`${translateText("Winner! Gain for this rotation:")} ${rotationGain.toFixed(2)} ${winnerParticipant.paymentMethod} for ${winnerParticipant.name}!`);
-            } else {
-                 alert(translateText("No winner this time.")); // Should not happen if count is 10
+        if (isWinningConditionMet) {
+            // Sum investments of the current batch for payout calculation
+            const totalInvestmentForCurrentPayout = rotationMembersQueue.reduce((sum, p) => sum + p.investment, 0);
+
+            const payoutPool = totalInvestmentForCurrentPayout + rolloverFund;
+            const winnerGain = (payoutPool - (payoutPool / 3)) + 0.3;
+
+            // Select winner: Assuming the last person added to the current batch is the winner
+            const winner = rotationMembersQueue[rotationMembersQueue.length - 1];
+
+            // Update winner's gain in the global participants array
+            const globalWinnerIndex = participants.findIndex(p => p.id === winner.id);
+            if (globalWinnerIndex !== -1) {
+                participants[globalWinnerIndex].gain = winnerGain;
             }
 
+            // Calculate new rollover fund for the *next* rotation
+            const newRollover = (payoutPool / 3) - (payoutPool / 3 * 0.10);
+            rolloverFund = newRollover;
 
-            // Reset rotation counters for the next round of 10
-            rotationParticipantsCount = 0;
-            totalInvestmentInRotation = 0;
+            alert(`${translateText("Winner! Gain for this rotation:")} ${winnerGain.toFixed(2)} ${winner.paymentMethod} for ${winner.name}!`);
 
-            saveParticipants(); // Save after updating winner's gain and resetting counters
+            // Reset the queue for the next batch of participants
+            rotationMembersQueue = [];
+
+            saveParticipants(); // Save updated participants (with winner's gain) and new rollover state
             renderParticipantsTable(); // Re-render to show winner's updated gain
         } else {
-            alert(`${translateText("Participant added to rotation. Current count:")} ${rotationParticipantsCount}/10`);
+            alert(`${translateText("Participant added to rotation. Current count:")} ${currentBatchSize}${translateText(" for this winner cycle.")}`);
         }
 
         // Clear inputs after adding to rotation
         document.getElementById("participantName").value = '';
         document.getElementById("participantInvestment").value = '';
-        document.getElementById("participantGain").value = ''; // Clear auto-calculated gain too
+        document.getElementById("participantGain").value = '';
     }
 
-
-    // --- Supervisor/Team Leader (Modified Functions for History) ---
+    // --- Supervisor/Team Leader Functions (remain largely the same for history display) ---
     function ajouterSuperviseur() {
         const container = document.getElementById('superviseurs');
         const div = document.createElement('div');
@@ -778,7 +800,7 @@
             <button onclick="demanderAction('logout')" class="btn-danger" data-translate="Request Logout">${translateText("Request Logout")}</button>
         `;
         container.appendChild(div);
-        renderSupervisorHistory(div.querySelector('.supervisor-history-body')); // Render history for new supervisor
+        renderSupervisorHistory(div.querySelector('.supervisor-history-body'));
     }
 
     function ajouterTeamLeader(btn) {
@@ -813,7 +835,7 @@
             </div>
         `;
         container.appendChild(div);
-        renderTeamLeaderHistory(div.querySelector('.teamleader-history-body')); // Render history for new team leader
+        renderTeamLeaderHistory(div.querySelector('.teamleader-history-body'));
     }
 
     function renderSupervisorHistory(tableBodyElement) {
@@ -922,7 +944,7 @@
     <input type="number" id="participantGain" data-translate-placeholder="Gain (€)" placeholder="Gain (€)" step="0.01" readonly />
     <input type="date" id="participantDate" />
 
-    <button onclick="addParticipant()" class="btn-primary" data-translate="Add Participant">➕ Add Participant (Normal)</button>
+    <button onclick="addParticipant()" class="btn-primary" data-translate="Add Participant (Normal)">➕ Add Participant (Normal)</button>
     <button onclick="addParticipantInRotation()" id="addParticipantInRotationBtn" data-translate="Add Participant in Rotation">🔄 Add Participant in Rotation</button>
 
     <div class="rotation-calculator-section">
