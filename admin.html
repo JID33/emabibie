@@ -26,343 +26,475 @@
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             box-sizing: border-box;
-        }
-        h1, h3, h4 {
             text-align: center;
-            color: #004080;
-            margin-bottom: 25px;
         }
-
-        input[type="password"],
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 12px 15px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            font-size: 16px;
-            box-sizing: border-box;
-            border: 1px solid #c0d0e0;
-            border-radius: 8px;
-            outline: none;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        input[type="password"]:focus,
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        input[type="date"]:focus,
-        select:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-        }
-
-        .button-group {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-top: 20px;
+        h2, h3, h4 {
+            color: #333;
             margin-bottom: 20px;
         }
-
-        button {
-            flex-grow: 1;
-            padding: 12px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
+        input[type="password"],
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
             border-radius: 8px;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            text-align: center;
-            white-space: nowrap;
+            font-size: 16px;
             box-sizing: border-box;
         }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .btn-danger { background-color: #e74c3c; color: white; }
-        .btn-danger:hover { background-color: #c0392b; }
-
-        .btn-primary { background-color: #007bff; color: white; }
-        .btn-primary:hover { background-color: #0056b3; }
-
-        .btn-secondary { background-color: #6c757d; color: white; }
-        .btn-secondary:hover { background-color: #545b62; }
-
-        #mainCard button,
-        #superviseurContainer button,
-        .teamleaders button,
-        .rotation-calculator-section button {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            margin-top: 0;
-        }
-        #addParticipantInRotationBtn {
-            background-color: #28a745;
+        button {
+            background-color: #007bff;
             color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s ease;
         }
-        #addParticipantInRotationBtn:hover {
+        button:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
             background-color: #218838;
         }
-
-        .button-group button {
-            margin-top: 0;
-            margin-bottom: 0;
+        .btn-danger {
+            background-color: #dc3545;
         }
-
-        #passwordStrengthMessage {
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-primary {
+            background-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .password-strength {
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        .strength-weak { color: red; }
+        .strength-medium { color: orange; }
+        .strength-strong { color: green; }
+        .alert {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
             text-align: left;
-            margin-top: -10px;
-            margin-bottom: 10px;
         }
-
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            font-size: 0.9em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         th, td {
-            border: 1px solid #e0e0e0;
-            padding: 10px;
-            text-align: center;
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
         }
         th {
-            background-color: #004080;
-            color: white;
-            font-weight: bold;
-        }
-        tr:nth-child(even) { background-color: #f8f8f8; }
-
-        .table-actions {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-        }
-        .table-actions button {
-            padding: 5px 8px;
-            font-size: 0.8em;
-            margin: 0;
-            width: auto;
-            display: inline-block;
-        }
-        .payment-validated {
-            background-color: #d4edda;
-            color: #155724;
-            font-weight: bold;
-        }
-        .payment-pending {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-
-        @media (max-width: 600px) {
-            input, button, select { font-size: 14px; padding: 10px; }
-            table { font-size: 0.8em; }
-            .button-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-        #forgotSection {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9em;
+            background-color: #f2f2f2;
             color: #555;
-            cursor: pointer;
-            text-decoration: underline;
+            text-transform: uppercase;
         }
-        #forgotSection:hover {
-            color: #007bff;
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
-        .alert-red { color: red; font-weight: bold; }
-
         .language-selector {
             margin-bottom: 20px;
-            text-align: right;
         }
-        .language-selector select {
-            width: auto;
-            display: inline-block;
-            margin-left: 10px;
+        .action-buttons button {
+            margin: 2px;
+            padding: 8px 12px;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
+
+    <div class="card" id="authCard">
+        <h2 data-translate="Espace Admin Sécurisé">Espace Admin Sécurisé</h2>
+        <input type="password" id="adminPass" placeholder="Mot de passe admin" onkeyup="checkPasswordStrength(this.value)">
+        <div id="passwordStrength" class="password-strength"></div>
+        <button onclick="toggleVisibility('adminPass')" data-translate="Show/Hide">👁️ Afficher/Cacher</button>
+        <button onclick="checkAdminStep1()" data-translate="Login">🔐 Connexion</button>
+        <p><a href="#" onclick="alert('Please contact support to reset your password.');" data-translate="Forgot password?">Mot de passe oublié ?</a></p>
+    </div>
+
+    <div class="card" id="codeCard" style="display:none;">
+        <h2 data-translate="Authentication Code">Code d'Authentification</h2>
+        <input type="text" id="adminCode" placeholder="Enter code">
+        <button onclick="checkAdminStep2()" data-translate="Verify Code">✔️ Vérifier Code</button>
+    </div>
+
+    <div class="card" id="adminPanel" style="display:none;">
+        <div class="language-selector">
+            <label for="languageSelect" data-translate="Select Language:">Select Language:</label>
+            <select id="languageSelect" onchange="setLanguage(this.value)">
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+            </select>
+        </div>
+        <h2 data-translate="D2B1 - Administration">D2B1 - Administration</h2>
+
+        <div class="input-group">
+            <input type="text" id="participantName" placeholder="Nom du participant" data-translate-placeholder="Participant Name">
+            <input type="number" id="participantInvestment" placeholder="Montant d'investissement" data-translate-placeholder="Investment Amount">
+            <input type="date" id="participantDate" data-translate-placeholder="Date">
+            <select id="paymentMethod">
+                <option value="cash" data-translate="Cash">Cash</option>
+                <option value="card" data-translate="Card">Card</option>
+            </select>
+            <button onclick="addParticipantInRotation()" class="btn-primary" data-translate="Add Participant to Rotation">🔄 Add Participant to Rotation</button>
+        </div>
+
+        <button onclick="togglePaymentValidation()" class="btn-success" data-translate="Validate Payment">✅ Validate Payment</button>
+        <button onclick="nextDay()" class="btn-secondary" data-translate="Next Day">⏩ Next Day</button>
+        <button onclick="exportToExcel()" class="btn-info" data-translate="Export History">📊 Export History</button>
+        <button onclick="resetData()" class="btn-danger" data-translate="Reset Data">🗑️ Reset Data</button>
+        <button onclick="logout()" class="btn-danger" data-translate="Logout">🚪 Logout</button>
+
+        <div id="stats" style="margin-top:20px;"></div>
+
+        <div id="historyTable" style="margin-top:20px;">
+            <h4 data-translate="Participant History">Participant History</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th data-translate="N°">N°</th>
+                        <th data-translate="Name">Name</th>
+                        <th data-translate="Paiement Validé">Paiement Validé</th>
+                        <th data-translate="Investment (€)">Investment (€)</th>
+                        <th data-translate="Gain (€)">Gain (€)</th>
+                        <th data-translate="Date">Date</th>
+                        <th data-translate="Total (€)">Total (€)</th>
+                        <th data-translate="Payment Method">Payment Method</th>
+                        <th data-translate="Actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="participantsTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="participantsList" style="margin-top:20px;"></div>
+    </div>
+
+    <div class="card" id="superviseurContainer" style="display:none;">
+        <h3 data-translate="Add Supervisor">Add Supervisor</h3>
+        <button class="btn-primary" onclick="ajouterSuperviseur()" data-translate="Supervisor +1">👨‍💼 Supervisor +1</button>
+        <div id="superviseurList"></div>
+    </div>
+
+    <div class="card" id="teamLeaderContainer" style="display:none;">
+        <h3 data-translate="Add Team Leader">Add Team Leader</h3>
+        <input type="text" id="teamLeaderName" placeholder="Nom du Team Leader" data-translate-placeholder="Team Leader Name">
+        <button class="btn-primary" onclick="ajouterTeamLeader()" data-translate="Team Leader +1">🧑‍💻 Team Leader +1</button>
+        <button onclick="nextDayTL()" class="btn-secondary" data-translate="Next Day (TL)">⏩ Next Day (TL)</button>
+        <button onclick="exportToExcelTL()" class="btn-info" data-translate="Export History (TL)">📊 Export History (TL)</button>
+        <div id="teamLeaderList"></div>
+    </div>
+
 <script>
-    emailjs.init("2hThAT8H9CsDcLLE1");
-
-    let otpCode = "";
-    const SECURE_ADMIN_PASSWORD = "D2B1@dmin2025";
-    let participants = []; // Global array to hold all participants
-
-    // Rotation specific state variables
+    // --- Global Variables and Constants ---
+    const SECURE_ADMIN_PASSWORD = "D2B1@dmin2025"; // !!! CHANGE THIS TO A SECURE PASSWORD !!!
+    const OTP_LENGTH = 6;
+    let currentOTP = '';
+    let participants = [];
     let rotationMembersQueue = []; // Temporarily holds participants for the current 10-person or 2-person batch
     let rolloverFund = 0; // Amount that carries over from previous rotation
 
-    // --- Language Translation Data ---
+    let supervisors = [];
+    let teamLeaders = [];
+    let currentLanguage = localStorage.getItem('language') || 'fr'; // Default to French
+
+    // EmailJS configuration (replace with your actual IDs)
+    emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Replace with your EmailJS Public Key
+    const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID"; // Replace with your EmailJS Service ID
+    const EMAILJS_TEMPLATE_ID = "YOUR_EMAILJS_TEMPLATE_ID"; // Replace with your EmailJS Template ID (for OTP)
+    const EMAILJS_CONTACT_TEMPLATE_ID = "template_tq202es"; // From image_8f3905.png
+
+    // --- Translations ---
     const translations = {
-        en: {
-            // General
-            "D2B1 - Secure Administration": "D2B1 - Secure Administration",
-            "D2B1 - Participant Management": "D2B1 - Participant Management",
-            "Secure Admin Space": "Secure Admin Space",
-            "Admin Password": "Admin Password",
-            "Show/Hide": "👁️ Show/Hide",
-            "Login": "🔐 Login",
-            "Forgot password?": "Forgot password?",
-            "Please contact administrator to reset your password.": "Please contact administrator to reset your password.",
-            "Incorrect password": "Incorrect password",
-            "OTP code sent to your email.": "📤 OTP code sent to your email.",
-            "Enter OTP code": "Enter OTP code",
-            "Verify": "✅ Verify",
-            "Invalid verification code": "Invalid verification code",
-            "Password correct.": "Password correct.",
-            "Strong password (but incorrect).": "Strong password (but incorrect).",
-            "Password must contain at least 8 characters, including one uppercase, one lowercase, one number, and one special character.": "Password must contain at least 8 characters, including one uppercase, one lowercase, one number, and one special character.",
-            "Error sending Email:": "Error sending Email:",
-            "Action 'Next Day' executed. (Full functionality requires a backend)": "Action 'Next Day' executed. (Full functionality requires a backend)",
-            "No data to export.": "No data to export.",
-            "ATTENTION: This will erase ALL participant data. Are you sure?": "ATTENTION: This will erase ALL participant data. Are you sure?",
-            "All participant data has been reset.": "All participant data has been reset.",
-            "Add Supervisor": "Add Supervisor",
-            "Supervisor +1": "👨‍💼 Supervisor +1",
-            "Supervisor Name": "Supervisor Name",
-            "Request Reset": "🗑️ Request Reset",
-            "Request Logout": "🚪 Request Logout",
-            "Team Leader Name": "Team Leader Name",
-            "Participant Name": "Participant Name",
-            "Add": "➕ Add",
-            "Validate Payment": "✅ Validate Payment",
-            "Next Day": "🔁 Next Day",
-            "Export": "📤 Export",
-            "Request for reset sent to administrator": "Request for reset sent to administrator",
-            "Request for logout sent to administrator": "Request for logout sent to administrator",
-            "No participant recorded.": "No participant recorded.",
-            "Please fill all fields (Name, Investment, Gain, Date) with valid values.": "Please fill all fields (Name, Investment, Gain, Date) with valid values.",
-            "Are you sure you want to delete this participant?": "Are you sure you want to delete this participant?",
-            "Cancel Payment": "Cancel Payment",
-            "Delete": "Delete",
-
-            // Main Card specific
-            "Add Participant (Normal)": "➕ Add Participant (Normal)",
-            "Investment (€)": "Investment (€)",
-            "Gain (€)": "Gain (€)",
-            "Participant History": "Participant History",
-            "Payment Validated": "Payment Validated",
-            "Yes": "Yes",
-            "No": "No",
-            "Total (€)": "Total (€)",
-            "Actions": "Actions",
-            "Export History": "📤 Export History",
-            "Reset Data": "🗑️ Reset Data",
-            "Logout": "🚪 Logout",
-            "Participant Name (for TL)": "Participant Name (for TL)",
-            "Payment Method": "Payment Method",
-            "N°": "N°",
-            "Name": "Name",
-            "Date": "Date",
-
-            // New rotation specific
-            "Rotation Gain Calculator": "Rotation Gain Calculator",
-            "Total Investment (for 10 participants)": "Total Investment (for 10 participants)",
-            "Calculated Gain (for Winner)": "Calculated Gain (for Winner)",
-            "Calculate Gain": "🧮 Calculate Gain",
-            "Add Participant in Rotation": "🔄 Add Participant in Rotation",
-            "Participant added to rotation. Current count:": "Participant added to rotation. Current count:",
-            "Winner! Gain for this rotation:": "Winner! Gain for this rotation:",
-            "No winner this time.": "No winner this time.",
-            "Must be a number 10 or more.": "Must be a number 10 or more.",
-            "Please fill all fields (Name, Investment, Date) with valid values.": "Please fill all fields (Name, Investment, Date) with valid values.",
-            " for this winner cycle.": " for this winner cycle."
-        },
         fr: {
-            // General
-            "D2B1 - Secure Administration": "D2B1 - Authentification Sécurisée",
-            "D2B1 - Participant Management": "D2B1 - Gestion des Participants",
-            "Secure Admin Space": "Espace Admin Sécurisé",
-            "Admin Password": "Mot de passe admin",
-            "Show/Hide": "👁️ Afficher/Cacher",
-            "Login": "🔐 Connexion",
+            "D2B1 - Secure Administration": "D2B1 - Administration Sécurisée",
+            "Espace Admin Sécurisé": "Espace Admin Sécurisé",
+            "Mot de passe admin": "Mot de passe admin",
+            "Show/Hide": "Afficher/Cacher",
+            "Login": "Connexion",
             "Forgot password?": "Mot de passe oublié ?",
-            "Please contact administrator to reset your password.": "Veuillez contacter l'administrateur pour réinitialiser votre mot de passe.",
-            "Incorrect password": "Mot de passe incorrect",
-            "OTP code sent to your email.": "📤 Code OTP envoyé à votre email.",
-            "Enter OTP code": "Entrez le code OTP",
-            "Verify": "✅ Vérifier",
-            "Invalid verification code": "Code de vérification invalide",
-            "Password correct.": "Mot de passe correct.",
-            "Strong password (but incorrect).": "Mot de passe fort (mais incorrect).",
-            "Password must contain at least 8 characters, including one uppercase, one lowercase, one number, and one special character.": "Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.",
-            "Error sending Email:": "Erreur envoi Email:",
-            "Action 'Next Day' executed. (Full functionality requires a backend)": "Action 'Jour Suivant' exécutée. (Fonctionnalité complète nécessite un backend)",
-            "No data to export.": "Aucune donnée à exporter.",
-            "ATTENTION: This will erase ALL participant data. Are you sure?": "ATTENTION : Ceci effacera TOUTES les données des participants. Êtes-vous sûr ?",
-            "All participant data has been reset.": "Toutes les données des participants ont été réinitialisées.",
-            "Add Supervisor": "Ajouter un Superviseur",
-            "Supervisor +1": "👨‍💼 Superviseur +1",
-            "Supervisor Name": "Nom du superviseur",
-            "Request Reset": "🗑️ Demande Réinitialiser",
-            "Request Logout": "🚪 Demande Déconnexion",
-            "Team Leader Name": "Nom du team leader",
+            "Authentication Code": "Code d'Authentification",
+            "Enter code": "Entrer le code",
+            "Verify Code": "Vérifier Code",
+            "D2B1 - Administration": "D2B1 - Administration",
+            "Select Language:": "Sélectionner la Langue :",
             "Participant Name": "Nom du participant",
-            "Add": "➕ Ajouter",
-            "Validate Payment": "✅ Valider Paiement",
-            "Next Day": "🔁 Jour Suivant",
-            "Export": "📤 Export",
-            "Request for reset sent to administrator": "Demande de réinitialisation envoyée à l’administrateur",
-            "Request for logout sent to administrator": "Demande de déconnexion envoyée à l’administrateur",
-            "No participant recorded.": "Aucun participant enregistré.",
-            "Please fill all fields (Name, Investment, Gain, Date) with valid values.": "Veuillez remplir tous les champs (Nom, Investissement, Gain, Date) avec des valeurs valides.",
-            "Are you sure you want to delete this participant?": "Êtes-vous sûr de vouloir supprimer ce participant ?",
-            "Cancel Payment": "Annuler Paiement",
-            "Delete": "Supprimer",
-
-            // Main Card specific
-            "Add Participant (Normal)": "➕ Ajouter Participant (Normal)",
-            "Investment (€)": "Investissement (€)",
-            "Gain (€)": "Gain (€)",
+            "Investment Amount": "Montant d'investissement",
+            "Date": "Date",
+            "Cash": "Cash",
+            "Card": "Carte",
+            "Add Participant to Rotation": "Ajouter Participant à la Rotation",
+            "Validate Payment": "Valider Paiement",
+            "Next Day": "Jour Suivant",
+            "Export History": "Exporter Historique",
+            "Reset Data": "Réinitialiser Données",
+            "Logout": "Déconnexion",
             "Participant History": "Historique des Participants",
-            "Payment Validated": "Paiement Validé",
-            "Yes": "Oui",
-            "No": "Non",
-            "Total (€)": "Total (€)",
-            "Actions": "Actions",
-            "Export History": "📤 Export Historique",
-            "Reset Data": "🗑️ Réinitialiser Données",
-            "Logout": "🚪 Déconnexion",
-            "Participant Name (for TL)": "Nom du participant (pour TL)",
-            "Payment Method": "Méthode de Paiement",
             "N°": "N°",
             "Name": "Nom",
-            "Date": "Date",
-
-            // New rotation specific
-            "Rotation Gain Calculator": "Calculateur de Gain de Rotation",
-            "Total Investment (for 10 participants)": "Investissement Total (pour 10 participants)",
-            "Calculated Gain (for Winner)": "Gain Calculé (pour le Gagnant)",
-            "Calculate Gain": "🧮 Calculer le Gain",
-            "Add Participant in Rotation": "🔄 Ajouter Participant en Rotation",
-            "Participant added to rotation. Current count:": "Participant ajouté à la rotation. Compte actuel :",
-            "Winner! Gain for this rotation:": "Gagnant ! Gain pour cette rotation :",
-            "No winner this time.": "Pas de gagnant cette fois-ci.",
-            "Must be a number 10 or more.": "Doit être un nombre de 10 ou plus.",
+            "Paiement Validé": "Paiement Validé",
+            "Investment (€)": "Investissement (€)",
+            "Gain (€)": "Gain (€)",
+            "Total (€)": "Total (€)",
+            "Payment Method": "Méthode de Paiement",
+            "Actions": "Actions",
+            "Edit": "Modifier",
+            "Delete": "Supprimer",
+            "Add Supervisor": "Ajouter Superviseur",
+            "Supervisor +1": "Superviseur +1",
+            "Add Team Leader": "Ajouter Chef d'Équipe",
+            "Team Leader Name": "Nom du Chef d'Équipe",
+            "Team Leader +1": "Chef d'Équipe +1",
+            "Next Day (TL)": "Jour Suivant (CE)",
+            "Export History (TL)": "Exporter Historique (CE)",
+            "Participant added successfully!": "Participant ajouté avec succès !",
             "Please fill all fields (Name, Investment, Date) with valid values.": "Veuillez remplir tous les champs (Nom, Investissement, Date) avec des valeurs valides.",
-            " for this winner cycle.": " pour ce cycle de gagnant."
+            "Winner! Gain for this rotation:": "Gagnant ! Gain pour cette rotation :",
+            " for ": " pour ",
+            "Participant added to rotation. Current count:": "Participant ajouté à la rotation. Compte actuel :",
+            " for this winner cycle.": " pour ce cycle de gagnant.",
+            "Payment validated successfully!": "Paiement validé avec succès !",
+            "All fields must be filled for new participant.": "Tous les champs doivent être remplis pour un nouveau participant.",
+            "Data reset successfully!": "Données réinitialisées avec succès !",
+            "Logged out successfully.": "Déconnecté avec succès.",
+            "Please enter a valid OTP.": "Veuillez entrer un code OTP valide.",
+            "OTP sent successfully! Check your email.": "OTP envoyé avec succès ! Vérifiez votre e-mail.",
+            "Failed to send OTP. Please try again.": "Échec de l'envoi de l'OTP. Veuillez réessayer.",
+            "Incorrect OTP. Please try again.": "OTP incorrect. Veuillez réessayer.",
+            "Login successful!": "Connexion réussie !",
+            "Invalid admin password.": "Mot de passe admin invalide.",
+            "Password is too weak.": "Le mot de passe est trop faible.",
+            "Password strength: Weak": "Force du mot de passe : Faible",
+            "Password strength: Medium": "Force du mot de passe : Moyenne",
+            "Password strength: Strong": "Force du mot de passe : Forte",
+            "Password strength: Very Strong": "Force du mot de passe : Très Forte",
+            "Amount due for validation: ": "Montant dû pour validation : ",
+            "Are you sure you want to delete ": "Voulez-vous vraiment supprimer ",
+            " and all its data?": " et toutes ses données ?",
+            "Supervisor added successfully!": "Superviseur ajouté avec succès !",
+            "Team Leader added successfully!": "Chef d'équipe ajouté avec succès !",
+            "Action request sent.": "Demande d'action envoyée.",
+            "Failed to send action request.": "Échec de l'envoi de la demande d'action.",
+            "Please select a Team Leader.": "Veuillez sélectionner un Chef d'Équipe.",
+            "No Team Leader selected.": "Aucun Chef d'Équipe sélectionné.",
+            "Enter a name for the Team Leader.": "Entrez un nom pour le Chef d'Équipe.",
+            "No supervisor selected.": "Aucun superviseur sélectionné.",
+            "This will reset all data. Are you sure?": "Ceci réinitialisera toutes les données. Êtes-vous sûr ?",
+            "Cannot validate payment, participant not found.": "Impossible de valider le paiement, participant non trouvé.",
+            "Gain calculated successfully!": "Gain calculé avec succès !",
+            "Total Gain (€)": "Gain Total (€)",
+            "Total Investment (€)": "Investissement Total (€)",
+            "Total Participants": "Nombre Total de Participants",
+            "Current Rollover Fund (€)": "Fonds de Roulement Actuel (€)"
+        },
+        en: {
+            "D2B1 - Secure Administration": "D2B1 - Secure Administration",
+            "Espace Admin Sécurisé": "Secure Admin Space",
+            "Mot de passe admin": "Admin password",
+            "Show/Hide": "Show/Hide",
+            "Login": "Login",
+            "Forgot password?": "Forgot password?",
+            "Authentication Code": "Authentication Code",
+            "Enter code": "Enter code",
+            "Verify Code": "Verify Code",
+            "D2B1 - Administration": "D2B1 - Administration",
+            "Select Language:": "Select Language:",
+            "Participant Name": "Participant Name",
+            "Investment Amount": "Investment Amount",
+            "Date": "Date",
+            "Cash": "Cash",
+            "Card": "Card",
+            "Add Participant to Rotation": "Add Participant to Rotation",
+            "Validate Payment": "Validate Payment",
+            "Next Day": "Next Day",
+            "Export History": "Export History",
+            "Reset Data": "Reset Data",
+            "Logout": "Logout",
+            "Participant History": "Participant History",
+            "N°": "N°",
+            "Name": "Name",
+            "Paiement Validé": "Payment Validated",
+            "Investment (€)": "Investment (€)",
+            "Gain (€)": "Gain (€)",
+            "Total (€)": "Total (€)",
+            "Payment Method": "Payment Method",
+            "Actions": "Actions",
+            "Edit": "Edit",
+            "Delete": "Delete",
+            "Add Supervisor": "Add Supervisor",
+            "Supervisor +1": "Supervisor +1",
+            "Add Team Leader": "Add Team Leader",
+            "Team Leader Name": "Team Leader Name",
+            "Team Leader +1": "Team Leader +1",
+            "Next Day (TL)": "Next Day (TL)",
+            "Export History (TL)": "Export History (TL)",
+            "Participant added successfully!": "Participant added successfully!",
+            "Please fill all fields (Name, Investment, Date) with valid values.": "Please fill all fields (Name, Investment, Date) with valid values.",
+            "Winner! Gain for this rotation:": "Winner! Gain for this rotation:",
+            " for ": " for ",
+            "Participant added to rotation. Current count:": "Participant added to rotation. Current count:",
+            " for this winner cycle.": " for this winner cycle.",
+            "Payment validated successfully!": "Payment validated successfully!",
+            "All fields must be filled for new participant.": "All fields must be filled for new participant.",
+            "Data reset successfully!": "Data reset successfully!",
+            "Logged out successfully.": "Logged out successfully.",
+            "Please enter a valid OTP.": "Please enter a valid OTP.",
+            "OTP sent successfully! Check your email.": "OTP sent successfully! Check your email.",
+            "Failed to send OTP. Please try again.": "Failed to send OTP. Please try again.",
+            "Incorrect OTP. Please try again.": "Incorrect OTP. Please try again.",
+            "Login successful!": "Login successful!",
+            "Invalid admin password.": "Invalid admin password.",
+            "Password is too weak.": "Password is too weak.",
+            "Password strength: Weak": "Password strength: Weak",
+            "Password strength: Medium": "Password strength: Medium",
+            "Password strength: Strong": "Password strength: Strong",
+            "Password strength: Very Strong": "Password strength: Very Strong",
+            "Amount due for validation: ": "Amount due for validation: ",
+            "Are you sure you want to delete ": "Are you sure you want to delete ",
+            " and all its data?": " and all its data?",
+            "Supervisor added successfully!": "Supervisor added successfully!",
+            "Team Leader added successfully!": "Team Leader added successfully!",
+            "Action request sent.": "Action request sent.",
+            "Failed to send action request.": "Failed to send action request.",
+            "Please select a Team Leader.": "Please select a Team Leader.",
+            "No Team Leader selected.": "No Team Leader selected.",
+            "Enter a name for the Team Leader.": "Enter a name for the Team Leader.",
+            "No supervisor selected.": "No supervisor selected.",
+            "This will reset all data. Are you sure?": "This will reset all data. Are you sure?",
+            "Cannot validate payment, participant not found.": "Cannot validate payment, participant not found.",
+            "Gain calculated successfully!": "Gain calculated successfully!",
+            "Total Gain (€)": "Total Gain (€)",
+            "Total Investment (€)": "Total Investment (€)",
+            "Total Participants": "Total Participants",
+            "Current Rollover Fund (€)": "Current Rollover Fund (€)"
+        },
+        es: {
+            "D2B1 - Secure Administration": "D2B1 - Administración Segura",
+            "Espace Admin Sécurisé": "Espacio de Administrador Seguro",
+            "Mot de passe admin": "Contraseña de administrador",
+            "Show/Hide": "Mostrar/Ocultar",
+            "Login": "Iniciar Sesión",
+            "Forgot password?": "¿Olvidó su contraseña?",
+            "Authentication Code": "Código de Autenticación",
+            "Enter code": "Introducir código",
+            "Verify Code": "Verificar Código",
+            "D2B1 - Administration": "D2B1 - Administración",
+            "Select Language:": "Seleccionar Idioma:",
+            "Participant Name": "Nombre del Participante",
+            "Investment Amount": "Monto de Inversión",
+            "Date": "Fecha",
+            "Cash": "Efectivo",
+            "Card": "Tarjeta",
+            "Add Participant to Rotation": "Añadir Participante a la Rotación",
+            "Validate Payment": "Validar Pago",
+            "Next Day": "Día Siguiente",
+            "Export History": "Exportar Historial",
+            "Reset Data": "Restablecer Datos",
+            "Logout": "Cerrar Sesión",
+            "Participant History": "Historial de Participantes",
+            "N°": "Nº",
+            "Name": "Nombre",
+            "Paiement Validé": "Pago Validado",
+            "Investment (€)": "Inversión (€)",
+            "Gain (€)": "Ganancia (€)",
+            "Total (€)": "Total (€)",
+            "Payment Method": "Método de Pago",
+            "Actions": "Acciones",
+            "Edit": "Editar",
+            "Delete": "Eliminar",
+            "Add Supervisor": "Añadir Supervisor",
+            "Supervisor +1": "Supervisor +1",
+            "Add Team Leader": "Añadir Líder de Equipo",
+            "Team Leader Name": "Nombre del Líder de Equipo",
+            "Team Leader +1": "Líder de Equipo +1",
+            "Next Day (TL)": "Día Siguiente (LE)",
+            "Export History (TL)": "Exportar Historial (LE)",
+            "Participant added successfully!": "¡Participante añadido con éxito!",
+            "Please fill all fields (Name, Investment, Date) with valid values.": "Por favor, rellene todos los campos (Nombre, Inversión, Fecha) con valores válidos.",
+            "Winner! Gain for this rotation:": "¡Ganador! Ganancia para esta rotación:",
+            " for ": " para ",
+            "Participant added to rotation. Current count:": "Participante añadido a la rotación. Recuento actual:",
+            " for this winner cycle.": " para este ciclo de ganador.",
+            "Payment validated successfully!": "¡Pago validado con éxito!",
+            "All fields must be filled for new participant.": "Todos los campos deben ser llenados para un nuevo participante.",
+            "Data reset successfully!": "¡Datos restablecidos con éxito!",
+            "Logged out successfully.": "Sesión cerrada con éxito.",
+            "Please enter a valid OTP.": "Por favor, introduzca un OTP válido.",
+            "OTP sent successfully! Check your email.": "¡OTP enviado con éxito! Revise su correo electrónico.",
+            "Failed to send OTP. Please try again.": "Error al enviar el OTP. Por favor, inténtelo de nuevo.",
+            "Incorrect OTP. Please try again.": "OTP incorrecto. Por favor, inténtelo de nuevo.",
+            "Login successful!": "¡Inicio de sesión exitoso!",
+            "Invalid admin password.": "Contraseña de administrador inválida.",
+            "Password is too weak.": "La contraseña es demasiado débil.",
+            "Password strength: Weak": "Fuerza de la contraseña: Débil",
+            "Password strength: Medium": "Fuerza de la contraseña: Media",
+            "Password strength: Strong": "Fuerza de la contraseña: Fuerte",
+            "Password strength: Very Strong": "Fuerza de la contraseña: Muy Fuerte",
+            "Amount due for validation: ": "Cantidad a validar: ",
+            "Are you sure you want to delete ": "¿Está seguro de que desea eliminar ",
+            " and all its data?": " y todos sus datos?",
+            "Supervisor added successfully!": "¡Supervisor añadido con éxito!",
+            "Team Leader added successfully!": "¡Líder de equipo añadido con éxito!",
+            "Action request sent.": "Solicitud de acción enviada.",
+            "Failed to send action request.": "Error al enviar la solicitud de acción.",
+            "Please select a Team Leader.": "Por favor, seleccione un Líder de Equipo.",
+            "No Team Leader selected.": "Ningún Líder de Equipo seleccionado.",
+            "Enter a name for the Team Leader.": "Ingrese un nombre para el Líder de Equipo.",
+            "No supervisor selected.": "Ningún supervisor seleccionado.",
+            "This will reset all data. Are you sure?": "Esto restablecerá todos los datos. ¿Está seguro?",
+            "Cannot validate payment, participant not found.": "No se puede validar el pago, participante no encontrado.",
+            "Gain calculated successfully!": "¡Ganancia calculada con éxito!",
+            "Total Gain (€)": "Ganancia Total (€)",
+            "Total Investment (€)": "Inversión Total (€)",
+            "Total Participants": "Número Total de Participantes",
+            "Current Rollover Fund (€)": "Fondo de Rotación Actual (€)"
         }
     };
 
-    let currentLanguage = localStorage.getItem('language') || 'en';
+    function translateText(key) {
+        return translations[currentLanguage][key] || key;
+    }
 
     function setLanguage(lang) {
         currentLanguage = lang;
@@ -370,640 +502,452 @@
         applyTranslations();
     }
 
-    function translateText(key) {
-        return translations[currentLanguage][key] || key;
-    }
-
     function applyTranslations() {
         document.querySelectorAll('[data-translate]').forEach(element => {
-            const key = element.getAttribute('data-translate');
-            element.textContent = translateText(key);
+            element.textContent = translateText(element.getAttribute('data-translate'));
         });
-
         document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
-            const key = element.getAttribute('data-translate-placeholder');
-            element.placeholder = translateText(key);
+            element.placeholder = translateText(element.getAttribute('data-translate-placeholder'));
         });
-
-        document.querySelectorAll('[data-translate-value]').forEach(element => {
-            const key = element.getAttribute('data-translate-value');
-            element.value = translateText(key);
-        });
-
-        document.title = translateText(document.title);
-        if (document.getElementById('mainCard')) {
-            document.getElementById('mainCard').querySelector('h3').textContent = translateText("D2B1 - Participant Management");
-        }
-        if (document.getElementById('authCard')) {
-            document.getElementById('authCard').querySelector('h1').textContent = translateText("Secure Admin Space");
-        }
-        if (document.getElementById('historyTable')) {
-            document.getElementById('historyTable').querySelector('h4').textContent = translateText("Participant History");
-        }
-        if (document.getElementById('superviseurContainer')) {
-             document.getElementById('superviseurContainer').querySelector('h3').textContent = translateText("Add Supervisor");
-        }
-        if (document.getElementById('rotationCalculatorSection')) {
-            document.getElementById('rotationCalculatorSection').querySelector('h4').textContent = translateText("Rotation Gain Calculator");
-        }
-
-        renderParticipantsTable(); // Re-render table to apply translations to dynamic content
+        renderParticipantsTable(); // Re-render table headers
+        renderStats(); // Re-render stats
     }
 
-    // --- Data Storage and Management ---
-    document.addEventListener('DOMContentLoaded', () => {
-        loadParticipants();
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.getElementById("participantDate");
-        if (dateInput) {
-            dateInput.value = today;
+    // --- Login and Authentication Functions ---
+    function checkPasswordStrength(password) {
+        const strengthDisplay = document.getElementById('passwordStrength');
+        let strength = 0;
+        if (password.length > 5) strength++;
+        if (password.length > 8) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        let strengthText = translateText("Password strength: Weak");
+        let strengthClass = "strength-weak";
+
+        if (strength >= 5) {
+            strengthText = translateText("Password strength: Very Strong");
+            strengthClass = "strength-strong";
+        } else if (strength >= 4) {
+            strengthText = translateText("Password strength: Strong");
+            strengthClass = "strength-strong";
+        } else if (strength >= 3) {
+            strengthText = translateText("Password strength: Medium");
+            strengthClass = "strength-medium";
         }
 
-        const investmentInput = document.getElementById("participantInvestment");
-        if (investmentInput) {
-            investmentInput.addEventListener("keyup", calculateGainOnEnter);
-        }
-
-        const rotationInvestmentInput = document.getElementById("rotationTotalInvestment");
-        if (rotationInvestmentInput) {
-            rotationInvestmentInput.addEventListener("keyup", (event) => {
-                if (event.key === "Enter") {
-                    calculateRotationGain();
-                }
-            });
-        }
-
-        const langSelector = document.getElementById('languageSelector');
-        if (langSelector) {
-            langSelector.value = currentLanguage;
-            langSelector.addEventListener('change', (event) => {
-                setLanguage(event.target.value);
-            });
-        }
-        applyTranslations();
-    });
-
-    function saveParticipants() {
-        localStorage.setItem('d2b1_participants', JSON.stringify(participants));
-        localStorage.setItem('rotationMembersQueue', JSON.stringify(rotationMembersQueue));
-        localStorage.setItem('rolloverFund', rolloverFund);
-    }
-
-    function loadParticipants() {
-        const storedParticipants = localStorage.getItem('d2b1_participants');
-        if (storedParticipants) {
-            participants = JSON.parse(storedParticipants);
-        } else {
-            participants = [];
-        }
-
-        const storedRotationQueue = localStorage.getItem('rotationMembersQueue');
-        if (storedRotationQueue) {
-            rotationMembersQueue = JSON.parse(storedRotationQueue);
-        } else {
-            rotationMembersQueue = [];
-        }
-
-        rolloverFund = parseFloat(localStorage.getItem('rolloverFund') || '0');
-
-        renderParticipantsTable();
-    }
-
-    function renderParticipantsTable() {
-        const tableBody = document.getElementById('participantsTableBody');
-        if (!tableBody) return;
-
-        tableBody.innerHTML = '';
-
-        if (participants.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="9" data-translate="No participant recorded.">${translateText("No participant recorded.")}</td></tr>`;
-            return;
-        }
-
-        participants.forEach((p, index) => {
-            const row = tableBody.insertRow();
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${p.name}</td>
-                <td class="${p.paymentValidated ? 'payment-validated' : 'payment-pending'}">
-                    ${p.paymentValidated ? translateText('Yes') : translateText('No')}
-                </td>
-                <td>${p.investment.toFixed(2)}</td>
-                <td>${p.gain.toFixed(2)}</td>
-                <td>${p.date}</td>
-                <td>${(p.investment + p.gain).toFixed(2)}</td>
-                <td>${p.paymentMethod}</td>
-                <td class="table-actions">
-                    <button onclick="togglePaymentValidation(${index})" class="${p.paymentValidated ? 'btn-secondary' : 'btn-primary'}">
-                        ${p.paymentValidated ? translateText('Cancel Payment') : translateText('Validate Payment')}
-                    </button>
-                    <button onclick="deleteParticipant(${index})" class="btn-danger">${translateText('Delete')}</button>
-                </td>
-            `;
-        });
-    }
-
-    // --- Authentication Functions ---
-    function isValidAdminPassword(password) {
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
-        return regex.test(password);
-    }
-
-    function sendOTPByEmail(code) {
-        const expiryTime = new Date();
-        expiryTime.setMinutes(expiryTime.getMinutes() + 15);
-        const options = { hour: 'numeric', minute: 'numeric', hour12: true, month: 'long', day: 'numeric', year: 'numeric' };
-        const formattedExpiryTime = expiryTime.toLocaleString('en-US', options);
-
-        emailjs.send("service_3gm6ixa", "template_s0v58wk", {
-            to_name: "Emmanuel",
-            to_email: "emmanueljeambas@gmail.com",
-            message: translateText("OTP code sent to your email.") + " " + code,
-            passcode: code,
-            time: formattedExpiryTime
-        }).then(() => console.log(translateText("OTP code sent to your email.")))
-        .catch(err => alert(translateText("Error sending Email:") + " " + err.text));
-    }
-
-    function checkAdminStep1() {
-        const pass = document.getElementById("adminPass").value;
-        if (pass === SECURE_ADMIN_PASSWORD) {
-            otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-            document.getElementById("authCard").style.display = "none";
-            document.getElementById("codeCard").style.display = "block";
-            sendOTPByEmail(otpCode);
-        } else {
-            alert(translateText("Incorrect password"));
-        }
+        strengthDisplay.textContent = strengthText;
+        strengthDisplay.className = 'password-strength ' + strengthClass;
     }
 
     function toggleVisibility(id) {
         const input = document.getElementById(id);
-        input.type = input.type === "password" ? "text" : "password";
-    }
-
-    function checkAdminStep2() {
-        const code = document.getElementById("code2FA").value.trim();
-        if (code === otpCode) {
-            document.getElementById("codeCard").style.display = "none";
-            document.getElementById("mainCard").style.display = "block";
-            document.getElementById("superviseurContainer").style.display = "block";
-            renderParticipantsTable();
+        if (input.type === "password") {
+            input.type = "text";
         } else {
-            alert(translateText("Invalid verification code"));
+            input.type = "password";
         }
     }
 
-    // --- Main Admin Actions (Participant Management) ---
-    function addParticipant() {
+    function generateOTP() {
+        let otp = '';
+        for (let i = 0; i < OTP_LENGTH; i++) {
+            otp += Math.floor(Math.random() * 10);
+        }
+        return otp;
+    }
+
+    function sendOTP(email) {
+        currentOTP = generateOTP(); // Store the generated OTP
+        const templateParams = {
+            to_email: email,
+            otp_code: currentOTP
+        };
+
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+            .then(function(response) {
+                alert(translateText('OTP sent successfully! Check your email.'));
+            }, function(error) {
+                console.error('Failed to send OTP:', error);
+                alert(translateText('Failed to send OTP. Please try again.'));
+            });
+    }
+
+    function checkAdminStep1() {
+        const adminPass = document.getElementById('adminPass').value;
+        if (adminPass === SECURE_ADMIN_PASSWORD) {
+            // Assuming admin's email is hardcoded or fetched from somewhere
+            sendOTP("D2B1.Admin@gmail.com"); // Replace with actual admin email
+            document.getElementById('authCard').style.display = 'none';
+            document.getElementById('codeCard').style.display = 'block';
+        } else {
+            alert(translateText('Invalid admin password.'));
+        }
+    }
+
+    function checkAdminStep2() {
+        const enteredOTP = document.getElementById('adminCode').value;
+        if (enteredOTP === currentOTP) {
+            localStorage.setItem('loggedIn', 'true');
+            document.getElementById('codeCard').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            alert(translateText('Login successful!'));
+            loadParticipants();
+            renderParticipantsTable();
+            renderStats();
+            applyTranslations(); // Apply translations after login
+        } else {
+            alert(translateText('Incorrect OTP. Please try again.'));
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('loggedIn');
+        localStorage.removeItem('participants');
+        localStorage.removeItem('rotationMembersQueue');
+        localStorage.removeItem('rolloverFund');
+        localStorage.removeItem('supervisors');
+        localStorage.removeItem('teamLeaders');
+        participants = [];
+        rotationMembersQueue = [];
+        rolloverFund = 0;
+        supervisors = [];
+        teamLeaders = [];
+        document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('authCard').style.display = 'block';
+        document.getElementById('adminPass').value = ''; // Clear password field
+        document.getElementById('adminCode').value = ''; // Clear OTP field
+        alert(translateText('Logged out successfully.'));
+        renderParticipantsTable(); // Clear table display
+        renderStats(); // Clear stats display
+    }
+
+    // --- Data Storage and Management ---
+    function saveParticipants() {
+        localStorage.setItem('participants', JSON.stringify(participants));
+        localStorage.setItem('rotationMembersQueue', JSON.stringify(rotationMembersQueue));
+        localStorage.setItem('rolloverFund', rolloverFund.toString());
+        localStorage.setItem('supervisors', JSON.stringify(supervisors));
+        localStorage.setItem('teamLeaders', JSON.stringify(teamLeaders));
+    }
+
+    function loadParticipants() {
+        participants = JSON.parse(localStorage.getItem('participants') || '[]');
+        rotationMembersQueue = JSON.parse(localStorage.getItem('rotationMembersQueue') || '[]');
+        rolloverFund = parseFloat(localStorage.getItem('rolloverFund') || '0');
+        supervisors = JSON.parse(localStorage.getItem('supervisors') || '[]');
+        teamLeaders = JSON.parse(localStorage.getItem('teamLeaders') || '[]');
+    }
+
+    // --- Participant & Rotation Management ---
+    function addParticipantInRotation() {
         const name = document.getElementById("participantName").value.trim();
         const investment = parseFloat(document.getElementById("participantInvestment").value);
-        const gain = parseFloat(document.getElementById("participantGain").value);
         const date = document.getElementById("participantDate").value;
         const paymentMethod = document.getElementById("paymentMethod").value;
 
-        if (!name || isNaN(investment) || isNaN(gain) || !date) {
-            alert(translateText("Please fill all fields (Name, Investment, Gain, Date) with valid values."));
+        if (!name || isNaN(investment) || !date) {
+            alert(translateText("Please fill all fields (Name, Investment, Date) with valid values."));
             return;
         }
 
         const newParticipant = {
-            id: Date.now(), // Unique ID for finding participants in global array
+            id: Date.now(), // Assign a unique ID
             name: name,
             paymentValidated: false,
             investment: investment,
-            gain: gain,
+            gain: 0, // Initial gain is 0, will be updated if they win
             date: date,
             paymentMethod: paymentMethod
         };
 
+        // Add participant to the global list and to the current rotation queue
         participants.push(newParticipant);
-        saveParticipants();
-        renderParticipantsTable();
+        rotationMembersQueue.push(newParticipant);
 
+        saveParticipants(); // Save updated global list and rotation queue
+        renderParticipantsTable(); // Re-render the main table
+
+        let currentBatchSize = rotationMembersQueue.length;
+        let isWinningConditionMet = false;
+
+        // Condition for winning: First 10, then every 2
+        if (participants.length <= 10 && currentBatchSize === 10) {
+            isWinningConditionMet = true;
+        } else if (participants.length > 10 && currentBatchSize === 2) {
+            isWinningConditionMet = true;
+        }
+
+        if (isWinningConditionMet) {
+            // Calculate total investment of the current batch for payout calculation
+            const totalInvestmentForCurrentPayout = rotationMembersQueue.reduce((sum, p) => sum + p.investment, 0);
+
+            // The effective total pool for this calculation includes the new investments AND the accumulated rollover.
+            const currentTotalSystemFunds = totalInvestmentForCurrentPayout + rolloverFund;
+
+            const winnerGain = (currentTotalSystemFunds - (currentTotalSystemFunds / 3)) + 0.3;
+
+            // Select winner: Assuming the last person added to the current batch is the winner
+            const winner = rotationMembersQueue[rotationMembersQueue.length - 1];
+
+            // Update winner's gain in the global participants array
+            const globalWinnerIndex = participants.findIndex(p => p.id === winner.id);
+            if (globalWinnerIndex !== -1) {
+                participants[globalWinnerIndex].gain = winnerGain;
+            }
+
+            // Calculate the amount that the system "keeps" from this `currentTotalSystemFunds`
+            // (1/3 of the total, minus 10% fee on that 1/3)
+            const amountRetainedBySystem = (currentTotalSystemFunds / 3) - (currentTotalSystemFunds / 3 * 0.10);
+
+            // Update the `rolloverFund` for the next cycle:
+            // It's the `currentTotalSystemFunds`
+            // MINUS the `winnerGain`
+            // PLUS the `amountRetainedBySystem` (which represents the 1/3 portion that is supposed to stay in the system).
+            // This way, the rollover fund accounts for both money paid out and money explicitly kept.
+            rolloverFund = currentTotalSystemFunds - winnerGain;
+            rolloverFund += amountRetainedBySystem; // Add the portion that should fuel future payouts
+
+            // Ensure rolloverFund doesn't go negative if there's a rounding issue or small amounts
+            if (rolloverFund < 0) {
+                rolloverFund = 0;
+            }
+
+            alert(`${translateText("Winner! Gain for this rotation:")} ${winnerGain.toFixed(2)} ${winner.paymentMethod} ${translateText("for")} ${winner.name}!`);
+
+            // Reset the queue for the next batch of participants
+            rotationMembersQueue = [];
+
+            saveParticipants(); // Save updated participants (with winner's gain) and new rollover state
+            renderParticipantsTable(); // Re-render to show winner's updated gain
+            renderStats(); // Update stats after a payout
+        } else {
+            alert(`${translateText("Participant added to rotation. Current count:")} ${currentBatchSize}${translateText(" for this winner cycle.")}`);
+        }
+
+        // Clear inputs after adding to rotation
         document.getElementById("participantName").value = '';
         document.getElementById("participantInvestment").value = '';
-        document.getElementById("participantGain").value = '';
+        document.getElementById("participantDate").value = '';
     }
 
-    function togglePaymentValidation(index) {
-        if (index >= 0 && index < participants.length) {
-            participants[index].paymentValidated = !participants[index].paymentValidated;
+    function togglePaymentValidation(participantId) {
+        const participantIndex = participants.findIndex(p => p.id === participantId);
+        if (participantIndex !== -1) {
+            participants[participantIndex].paymentValidated = !participants[participantIndex].paymentValidated;
+            saveParticipants();
+            renderParticipantsTable();
+            alert(translateText("Payment validated successfully!"));
+        } else {
+            alert(translateText("Cannot validate payment, participant not found."));
+        }
+    }
+
+    function nextDay() {
+        // This function can be used to signify a new "day" in the rotation,
+        // though the current rotation logic is based on participant count.
+        // It might be used for daily reporting or other time-based actions.
+        alert(translateText("Next day initiated (functionality to be defined)."));
+    }
+
+    function renderParticipantsTable() {
+        const tableBody = document.getElementById('participantsTableBody');
+        tableBody.innerHTML = ''; // Clear existing rows
+        let totalInvestment = 0;
+        let totalGain = 0;
+
+        participants.forEach((participant, index) => {
+            const row = tableBody.insertRow();
+            row.insertCell(0).textContent = index + 1; // N°
+            row.insertCell(1).textContent = participant.name; // Name
+            row.insertCell(2).textContent = participant.paymentValidated ? '✅' : '❌'; // Paiement Validé
+            row.insertCell(3).textContent = participant.investment.toFixed(2); // Investment (€)
+            row.insertCell(4).textContent = participant.gain.toFixed(2); // Gain (€)
+            row.insertCell(5).textContent = participant.date; // Date
+            row.insertCell(6).textContent = (participant.investment + participant.gain).toFixed(2); // Total (€)
+            row.insertCell(7).textContent = translateText(participant.paymentMethod); // Payment Method
+
+            const actionsCell = row.insertCell(8);
+            const validateButton = document.createElement('button');
+            validateButton.textContent = translateText('Validate');
+            validateButton.className = 'btn-success action-buttons';
+            validateButton.onclick = () => togglePaymentValidation(participant.id);
+            actionsCell.appendChild(validateButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = translateText('Delete');
+            deleteButton.className = 'btn-danger action-buttons';
+            deleteButton.onclick = () => deleteParticipant(participant.id, participant.name);
+            actionsCell.appendChild(deleteButton);
+
+            totalInvestment += participant.investment;
+            totalGain += participant.gain;
+        });
+        renderStats(totalInvestment, totalGain);
+    }
+
+    function renderStats(totalInvestment = 0, totalGain = 0) {
+        const statsDiv = document.getElementById('stats');
+        statsDiv.innerHTML = `
+            <p><strong data-translate="Total Participants">Total Participants</strong>: ${participants.length}</p>
+            <p><strong data-translate="Total Investment (€)">Total Investment (€)</strong>: ${totalInvestment.toFixed(2)}</p>
+            <p><strong data-translate="Total Gain (€)">Total Gain (€)</strong>: ${totalGain.toFixed(2)}</p>
+            <p><strong data-translate="Current Rollover Fund (€)">Current Rollover Fund (€)</strong>: ${rolloverFund.toFixed(2)}</p>
+        `;
+        applyTranslations(); // Apply translations to newly rendered stats
+    }
+
+
+    function deleteParticipant(id, name) {
+        if (confirm(`${translateText("Are you sure you want to delete")} ${name} ${translateText("and all its data?")}`)) {
+            participants = participants.filter(p => p.id !== id);
+            // Also remove from rotationMembersQueue if present
+            rotationMembersQueue = rotationMembersQueue.filter(p => p.id !== id);
             saveParticipants();
             renderParticipantsTable();
         }
     }
 
-    function deleteParticipant(index) {
-        if (confirm(translateText("Are you sure you want to delete this participant?"))) {
-            if (index >= 0 && index < participants.length) {
-                // When deleting, also check if they are in the rotation queue
-                const deletedParticipantId = participants[index].id;
-                rotationMembersQueue = rotationMembersQueue.filter(p => p.id !== deletedParticipantId);
-
-                participants.splice(index, 1);
-                saveParticipants();
-                renderParticipantsTable();
-            }
+    function resetData() {
+        if (confirm(translateText("This will reset all data. Are you sure?"))) {
+            localStorage.clear(); // Clears all local storage
+            participants = [];
+            rotationMembersQueue = [];
+            rolloverFund = 0;
+            supervisors = [];
+            teamLeaders = [];
+            renderParticipantsTable();
+            renderStats();
+            alert(translateText("Data reset successfully!"));
         }
     }
 
-    function nextDay() {
-        alert(translateText("Action 'Next Day' executed. (Full functionality requires a backend)"));
-        renderParticipantsTable();
-    }
-
+    // --- Export Functions ---
     function exportToExcel() {
-        if (participants.length === 0) {
-            alert(translateText("No data to export."));
-            return;
-        }
-
-        const data = [
-            [translateText("N°"), translateText("Name"), translateText("Payment Validated"), translateText("Investment (€)"), translateText("Gain (€)"), translateText("Date"), translateText("Total (€)"), translateText("Payment Method")]
+        const ws_data = [
+            [translateText("N°"), translateText("Name"), translateText("Paiement Validé"), translateText("Investment (€)"), translateText("Gain (€)"), translateText("Date"), translateText("Total (€)"), translateText("Payment Method")]
         ];
         participants.forEach((p, index) => {
-            data.push([
+            ws_data.push([
                 index + 1,
                 p.name,
-                p.paymentValidated ? translateText("Yes") : translateText("No"),
-                p.investment,
-                p.gain,
+                p.paymentValidated ? 'Yes' : 'No',
+                p.investment.toFixed(2),
+                p.gain.toFixed(2),
                 p.date,
-                p.investment + p.gain,
+                (p.investment + p.gain).toFixed(2),
                 p.paymentMethod
             ]);
         });
 
-        const ws = XLSX.utils.aoa_to_sheet(data);
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, translateText("Participants"));
-        XLSX.writeFile(wb, "D2B1_Participants_Historique.xlsx");
-    }
-
-    function resetData() {
-        if (confirm(translateText("ATTENTION: This will erase ALL participant data. Are you sure?"))) {
-            localStorage.removeItem('d2b1_participants');
-            localStorage.removeItem('rotationMembersQueue');
-            localStorage.removeItem('rolloverFund');
-
-            participants = [];
-            rotationMembersQueue = [];
-            rolloverFund = 0;
-            renderParticipantsTable();
-            alert(translateText("All participant data has been reset."));
-        }
-    }
-
-    function logout() { location.reload(); }
-
-    function calculateGainOnEnter(event) {
-        if (event.key === "Enter") {
-            const investmentInput = document.getElementById("participantInvestment");
-            const gainInput = document.getElementById("participantGain");
-
-            const investment = parseFloat(investmentInput.value);
-
-            if (!isNaN(investment) && investment > 0) {
-                const calculatedGain = investment * 0.10; // Simple 10% gain for individual
-                gainInput.value = calculatedGain.toFixed(2);
-            } else {
-                gainInput.value = '';
-            }
-        }
-    }
-
-    // --- Rotation Specific Functions ---
-    function calculateRotationGain() {
-        const totalInvestmentInput = document.getElementById("rotationTotalInvestment");
-        const calculatedGainOutput = document.getElementById("calculatedRotationGain");
-        const totalInvestment = parseFloat(totalInvestmentInput.value);
-
-        if (isNaN(totalInvestment) || totalInvestment < 10) {
-            calculatedGainOutput.value = '';
-            alert(translateText("Must be a number 10 or more."));
-            return;
-        }
-
-        // Apply the rotation logic as clarified: (N - N/3) + 0.3
-        const gain = (totalInvestment - (totalInvestment / 3)) + 0.3;
-        calculatedGainOutput.value = gain.toFixed(2);
-    }
-
-    function addParticipantInRotation() {
-    const name = document.getElementById("participantName").value.trim();
-    const investment = parseFloat(document.getElementById("participantInvestment").value);
-    const date = document.getElementById("participantDate").value;
-    const paymentMethod = document.getElementById("paymentMethod").value;
-
-    if (!name || isNaN(investment) || !date) {
-        alert(translateText("Please fill all fields (Name, Investment, Date) with valid values."));
-        return;
-    }
-
-    const newParticipant = {
-        id: Date.now(), // Assign a unique ID
-        name: name,
-        paymentValidated: false,
-        investment: investment,
-        gain: 0, // Initial gain is 0, will be updated if they win
-        date: date,
-        paymentMethod: paymentMethod
-    };
-
-    // Add participant to the global list and to the current rotation queue
-    participants.push(newParticipant);
-    rotationMembersQueue.push(newParticipant);
-
-    saveParticipants(); // Save updated global list and rotation queue
-    renderParticipantsTable(); // Re-render the main table
-
-    let currentBatchSize = rotationMembersQueue.length;
-    let isWinningConditionMet = false;
-
-    // Condition for winning: First 10, then every 2
-    if (participants.length <= 10 && currentBatchSize === 10) {
-        isWinningConditionMet = true;
-    } else if (participants.length > 10 && currentBatchSize === 2) {
-        isWinningConditionMet = true;
-    }
-
-    if (isWinningConditionMet) {
-        // Calculate total investment of the current batch for payout calculation
-        const totalInvestmentForCurrentPayout = rotationMembersQueue.reduce((sum, p) => sum + p.investment, 0);
-
-        // The effective total pool for this calculation includes the new investments AND the accumulated rollover.
-        const currentTotalSystemFunds = totalInvestmentForCurrentPayout + rolloverFund;
-
-        const winnerGain = (currentTotalSystemFunds - (currentTotalSystemFunds / 3)) + 0.3;
-
-        // Select winner: Assuming the last person added to the current batch is the winner
-        const winner = rotationMembersQueue[rotationMembersQueue.length - 1];
-
-        // Update winner's gain in the global participants array
-        const globalWinnerIndex = participants.findIndex(p => p.id === winner.id);
-        if (globalWinnerIndex !== -1) {
-            participants[globalWinnerIndex].gain = winnerGain;
-        }
-
-        // Calculate the amount that the system "keeps" from this `currentTotalSystemFunds`
-        // (1/3 of the total, minus 10% fee on that 1/3)
-        const amountRetainedBySystem = (currentTotalSystemFunds / 3) - (currentTotalSystemFunds / 3 * 0.10);
-
-        // Update the `rolloverFund` for the next cycle:
-        // It's the `currentTotalSystemFunds`
-        // MINUS the `winnerGain`
-        // PLUS the `amountRetainedBySystem` (which represents the 1/3 portion that is supposed to stay in the system).
-        // This way, the rollover fund accounts for both money paid out and money explicitly kept.
-        rolloverFund = currentTotalSystemFunds - winnerGain;
-        rolloverFund += amountRetainedBySystem; // Add the portion that should fuel future payouts
-
-        // Ensure rolloverFund doesn't go negative if there's a rounding issue or small amounts
-        if (rolloverFund < 0) {
-            rolloverFund = 0;
-        }
-
-        alert(`${translateText("Winner! Gain for this rotation:")} ${winnerGain.toFixed(2)} ${winner.paymentMethod} for ${winner.name}!`);
-
-        // Reset the queue for the next batch of participants
-        rotationMembersQueue = [];
-
-        saveParticipants(); // Save updated participants (with winner's gain) and new rollover state
-        renderParticipantsTable(); // Re-render to show winner's updated gain
-    } else {
-        alert(`${translateText("Participant added to rotation. Current count:")} ${currentBatchSize}${translateText(" for this winner cycle.")}`);
-    }
-
-    // Clear inputs after adding to rotation
-    document.getElementById("participantName").value = '';
-    document.getElementById("participantInvestment").value = '';
-    document.getElementById("participantGain").value = '';
-}
-    }
-
-    // --- Supervisor/Team Leader Functions (remain largely the same for history display) ---
-    function ajouterSuperviseur() {
-        const container = document.getElementById('superviseurs');
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `
-            <h4 data-translate="Supervisor Name">${translateText("Supervisor Name")}</h4>
-            <input type="text" data-translate-placeholder="Supervisor Name" placeholder="${translateText('Supervisor Name')}" />
-            <button onclick="ajouterTeamLeader(this)" class="btn-primary" data-translate="Supervisor +1">${translateText("Supervisor +1")}</button>
-            <div class="teamleaders"></div>
-            <div style="margin-top: 20px;">
-                <h4 data-translate="Participant History">${translateText("Participant History")}</h4>
-                <table>
-                    <thead>
-                        <tr>
-                            <th data-translate="N°">${translateText("N°")}</th>
-                            <th data-translate="Name">${translateText("Name")}</th>
-                            <th data-translate="Paiement Validé">${translateText("Paiement Validé")}</th>
-                            <th data-translate="Investment (€)">${translateText("Investment (€)")}</th>
-                            <th data-translate="Gain (€)">${translateText("Gain (€)")}</th>
-                            <th data-translate="Date">${translateText("Date")}</th>
-                            <th data-translate="Total (€)">${translateText("Total (€)")}</th>
-                            <th data-translate="Payment Method">${translateText("Payment Method")}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="supervisor-history-body">
-                        </tbody>
-                </table>
-            </div>
-            <button onclick="demanderAction('reset')" class="btn-danger" data-translate="Request Reset">${translateText("Request Reset")}</button>
-            <button onclick="demanderAction('logout')" class="btn-danger" data-translate="Request Logout">${translateText("Request Logout")}</button>
-        `;
-        container.appendChild(div);
-        renderSupervisorHistory(div.querySelector('.supervisor-history-body'));
-    }
-
-    function ajouterTeamLeader(btn) {
-        const container = btn.nextElementSibling;
-        const div = document.createElement('div');
-        div.className = 'card team-leader-card';
-        div.innerHTML = `
-            <input type="text" data-translate-placeholder="Team Leader Name" placeholder="${translateText('Team Leader Name')}" />
-            <input type="text" data-translate-placeholder="Participant Name (for TL)" placeholder="${translateText('Participant Name (for TL)')}" />
-            <button class="btn-primary" data-translate="Add">${translateText("Add")}</button>
-            <button class="btn-secondary" data-translate="Validate Payment">${translateText("Validate Payment")}</button>
-            <button onclick="nextDayTL()" class="btn-secondary" data-translate="Next Day">${translateText("Next Day")}</button>
-            <button onclick="exportToExcelTL()" class="btn-primary" data-translate="Export">${translateText("Export")}</button>
-            <div style="margin-top: 20px;">
-                <h4 data-translate="Participant History">${translateText("Participant History")}</h4>
-                <table>
-                    <thead>
-                        <tr>
-                            <th data-translate="N°">${translateText("N°")}</th>
-                            <th data-translate="Name">${translateText("Name")}</th>
-                            <th data-translate="Paiement Validé">${translateText("Paiement Validé")}</th>
-                            <th data-translate="Investment (€)">${translateText("Investment (€)")}</th>
-                            <th data-translate="Gain (€)">${translateText("Gain (€)")}</th>
-                            <th data-translate="Date">${translateText("Date")}</th>
-                            <th data-translate="Total (€)">${translateText("Total (€)")}</th>
-                            <th data-translate="Payment Method">${translateText("Payment Method")}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="teamleader-history-body">
-                        </tbody>
-                </table>
-            </div>
-        `;
-        container.appendChild(div);
-        renderTeamLeaderHistory(div.querySelector('.teamleader-history-body'));
-    }
-
-    function renderSupervisorHistory(tableBodyElement) {
-        if (!tableBodyElement) return;
-
-        tableBodyElement.innerHTML = '';
-        if (participants.length === 0) {
-            tableBodyElement.innerHTML = `<tr><td colspan="8">${translateText("No participant recorded.")}</td></tr>`;
-            return;
-        }
-
-        participants.forEach((p, index) => {
-            const row = tableBodyElement.insertRow();
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${p.name}</td>
-                <td class="${p.paymentValidated ? 'payment-validated' : 'payment-pending'}">
-                    ${p.paymentValidated ? translateText('Yes') : translateText('No')}
-                </td>
-                <td>${p.investment.toFixed(2)}</td>
-                <td>${p.gain.toFixed(2)}</td>
-                <td>${p.date}</td>
-                <td>${(p.investment + p.gain).toFixed(2)}</td>
-                <td>${p.paymentMethod}</td>
-            `;
-        });
-    }
-
-    function renderTeamLeaderHistory(tableBodyElement) {
-        renderSupervisorHistory(tableBodyElement);
-    }
-
-    function nextDayTL() {
-        nextDay();
+        XLSX.utils.book_append_sheet(wb, ws, "Participants Data");
+        XLSX.writeFile(wb, "participants_data.xlsx");
     }
 
     function exportToExcelTL() {
-        exportToExcel();
+        // This function is for Team Leader specific export, currently mirrors general export
+        // You would modify this to export only data relevant to a specific Team Leader
+        exportToExcel(); // Placeholder: currently calls the general export
+        alert(translateText("Export History (TL) functionality will be specific to Team Leader data."));
     }
 
-    function demanderAction(type) {
-        const msg = type === 'reset' ? translateText('Request for reset sent to administrator') : translateText('Request for logout sent to administrator');
-        alert(msg);
+    // --- Supervisor and Team Leader Functions ---
+    function ajouterSuperviseur() {
+        const newSupervisor = {
+            id: Date.now(),
+            name: "Supervisor " + (supervisors.length + 1),
+            // Add other supervisor specific data if needed
+        };
+        supervisors.push(newSupervisor);
+        saveParticipants(); // Save updated supervisors list
+        renderSuperviseurList();
+        alert(translateText("Supervisor added successfully!"));
     }
 
-    // --- Password Strength Check ---
-    function checkPasswordStrength() {
-        const password = document.getElementById("adminPass").value;
-        const messageElement = document.getElementById("passwordStrengthMessage");
-
-        if (password === SECURE_ADMIN_PASSWORD) {
-            messageElement.textContent = translateText("Password correct.");
-            messageElement.style.color = "green";
-        } else if (isValidAdminPassword(password)) {
-            messageElement.textContent = translateText("Strong password (but incorrect).");
-            messageElement.style.color = "orange";
-        } else {
-            messageElement.textContent = translateText("Password must contain at least 8 characters, including one uppercase, one lowercase, one number, and one special character.");
-            messageElement.style.color = "red";
+    function renderSuperviseurList() {
+        const listDiv = document.getElementById('superviseurList');
+        listDiv.innerHTML = '<h4>' + translateText("Supervisors") + '</h4>';
+        if (supervisors.length === 0) {
+            listDiv.innerHTML += '<p>' + translateText("No supervisor selected.") + '</p>';
+            return;
         }
+        supervisors.forEach(s => {
+            listDiv.innerHTML += `<p>${s.name}</p>`;
+        });
     }
+
+    function ajouterTeamLeader() {
+        const tlName = document.getElementById('teamLeaderName').value.trim();
+        if (!tlName) {
+            alert(translateText("Enter a name for the Team Leader."));
+            return;
+        }
+        const newTeamLeader = {
+            id: Date.now(),
+            name: tlName,
+            // Add other Team Leader specific data like assigned participants etc.
+        };
+        teamLeaders.push(newTeamLeader);
+        saveParticipants();
+        renderTeamLeaderList();
+        document.getElementById('teamLeaderName').value = ''; // Clear input
+        alert(translateText("Team Leader added successfully!"));
+    }
+
+    function renderTeamLeaderList() {
+        const listDiv = document.getElementById('teamLeaderList');
+        listDiv.innerHTML = '<h4>' + translateText("Team Leaders") + '</h4>';
+        if (teamLeaders.length === 0) {
+            listDiv.innerHTML += '<p>' + translateText("No Team Leader selected.") + '</p>';
+            return;
+        }
+        teamLeaders.forEach(tl => {
+            listDiv.innerHTML += `<p>${tl.name}</p>`;
+        });
+    }
+
+    function nextDayTL() {
+        alert(translateText("Next Day (TL) functionality to be implemented."));
+    }
+
+    // Example of a function to send a contact message via EmailJS (if needed)
+    function sendContactForm() {
+        const templateParams = {
+            from_name: "Admin Panel User", // You might want to make this configurable
+            message: "An action request from the admin panel.", // Customize message
+        };
+
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONTACT_TEMPLATE_ID, templateParams)
+            .then(function(response) {
+                alert(translateText('Action request sent.'));
+            }, function(error) {
+                console.error('Failed to send action request:', error);
+                alert(translateText('Failed to send action request.'));
+            });
+    }
+
+    // --- Initial Load ---
+    document.addEventListener('DOMContentLoaded', () => {
+        applyTranslations(); // Apply translations on initial load
+        if (localStorage.getItem('loggedIn') === 'true') {
+            document.getElementById('authCard').style.display = 'none';
+            document.getElementById('codeCard').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            loadParticipants();
+            renderParticipantsTable();
+            renderStats();
+            renderSuperviseurList();
+            renderTeamLeaderList();
+        } else {
+            document.getElementById('authCard').style.display = 'block';
+            document.getElementById('codeCard').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+    });
+
 </script>
-
-<div class="card" id="authCard">
-    <div class="language-selector">
-        <label for="languageSelector">Language:</label>
-        <select id="languageSelector">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-        </select>
-    </div>
-    <h1 data-translate="Secure Admin Space">Secure Admin Space</h1>
-    <input type="password" id="adminPass" data-translate-placeholder="Admin Password" placeholder="Admin Password" onkeyup="checkPasswordStrength()"/>
-    <p id="passwordStrengthMessage" style="font-size:0.8em; color: gray;"></p>
-    <div class="button-group">
-        <button onclick="toggleVisibility('adminPass')" class="btn-secondary" data-translate="Show/Hide">👁️ Show/Hide</button>
-        <button onclick="checkAdminStep1()" class="btn-primary" data-translate="Login">🔐 Login</button>
-    </div>
-    <div id="forgotSection" onclick="alert(translateText('Please contact administrator to reset your password.'))" data-translate="Forgot password?">Forgot password?</div>
-</div>
-
-<div class="card" id="codeCard" style="display:none;">
-    <p data-translate="OTP code sent to your email.">📤 OTP code sent to your email.</p>
-    <input type="password" id="code2FA" data-translate-placeholder="Enter OTP code" placeholder="Enter OTP code" />
-    <div class="button-group">
-        <button onclick="toggleVisibility('code2FA')" class="btn-secondary" data-translate="Show/Hide">👁️ Show/Hide</button>
-        <button onclick="checkAdminStep2()" class="btn-primary" data-translate="Verify">✅ Verify</button>
-    </div>
-</div>
-
-<div class="card" id="mainCard" style="display:none;">
-    <h3 data-translate="D2B1 - Participant Management">D2B1 - Participant Management</h3>
-
-    <input type="text" id="participantName" data-translate-placeholder="Participant Name" placeholder="Participant Name" />
-    <input type="number" id="participantInvestment" data-translate-placeholder="Investment (€)" placeholder="Investment (€)" step="0.01" />
-
-    <label for="paymentMethod" data-translate="Payment Method">Payment Method:</label>
-    <select id="paymentMethod">
-        <option value="USD" selected>USD - US Dollar</option>
-        <option value="HTG">HTG - Haitian Gourde</option>
-        <option value="EUR">EUR - Euro</option>
-        <option value="CAD">CAD - Canadian Dollar</option>
-        <option value="GBP">GBP - British Pound</option>
-    </select>
-    
-    <input type="number" id="participantGain" data-translate-placeholder="Gain (€)" placeholder="Gain (€)" step="0.01" readonly />
-    <input type="date" id="participantDate" />
-
-    <button onclick="addParticipant()" class="btn-primary" data-translate="Add Participant (Normal)">➕ Add Participant (Normal)</button>
-    <button onclick="addParticipantInRotation()" id="addParticipantInRotationBtn" data-translate="Add Participant in Rotation">🔄 Add Participant in Rotation</button>
-
-    <div class="rotation-calculator-section">
-        <h4 data-translate="Rotation Gain Calculator">Rotation Gain Calculator</h4>
-        <input type="number" id="rotationTotalInvestment" data-translate-placeholder="Total Investment (for 10 participants)" placeholder="Total Investment (for 10 participants)" step="0.01" />
-        <input type="number" id="calculatedRotationGain" data-translate-placeholder="Calculated Gain (for Winner)" placeholder="Calculated Gain (for Winner)" step="0.01" readonly />
-        <button onclick="calculateRotationGain()" class="btn-primary" data-translate="Calculate Gain">🧮 Calculate Gain</button>
-    </div>
-
-    <button onclick="nextDay()" class="btn-secondary" data-translate="Next Day">🔁 Next Day</button>
-    <button onclick="exportToExcel()" class="btn-primary" data-translate="Export History">📤 Export History</button>
-    <button onclick="resetData()" class="btn-danger" data-translate="Reset Data">🗑️ Reset Data</button>
-    <button onclick="logout()" class="btn-danger" data-translate="Logout">🚪 Logout</button>
-
-    <div id="stats" style="margin-top:20px;"></div>
-
-    <div id="historyTable" style="margin-top:20px;">
-        <h4 data-translate="Participant History">Participant History</h4>
-        <table>
-            <thead>
-                <tr>
-                    <th data-translate="N°">N°</th>
-                    <th data-translate="Name">Name</th>
-                    <th data-translate="Paiement Validé">Paiement Validé</th>
-                    <th data-translate="Investment (€)">Investment (€)</th>
-                    <th data-translate="Gain (€)">Gain (€)</th>
-                    <th data-translate="Date">Date</th>
-                    <th data-translate="Total (€)">Total (€)</th>
-                    <th data-translate="Payment Method">Payment Method</th>
-                    <th data-translate="Actions">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="participantsTableBody">
-                </tbody>
-        </table>
-    </div>
-
-    <div id="participantsList" style="margin-top:20px;"></div>
-</div>
-
-<div class="card" id="superviseurContainer" style="display:none;">
-    <h3 data-translate="Add Supervisor">Add Supervisor</h3>
-    <button class="btn-primary" onclick="ajouterSuperviseur()" data-translate="Supervisor +1">👨‍💼 Supervisor +1</button>
-    <div id="superviseurs"></div>
-</div>
-
 </body>
 </html>
