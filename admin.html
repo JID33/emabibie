@@ -691,80 +691,94 @@
     }
 
     function addParticipantInRotation() {
-        const name = document.getElementById("participantName").value.trim();
-        const investment = parseFloat(document.getElementById("participantInvestment").value);
-        const date = document.getElementById("participantDate").value;
-        const paymentMethod = document.getElementById("paymentMethod").value;
+    const name = document.getElementById("participantName").value.trim();
+    const investment = parseFloat(document.getElementById("participantInvestment").value);
+    const date = document.getElementById("participantDate").value;
+    const paymentMethod = document.getElementById("paymentMethod").value;
 
-        if (!name || isNaN(investment) || !date) {
-            alert(translateText("Please fill all fields (Name, Investment, Date) with valid values."));
-            return;
+    if (!name || isNaN(investment) || !date) {
+        alert(translateText("Please fill all fields (Name, Investment, Date) with valid values."));
+        return;
+    }
+
+    const newParticipant = {
+        id: Date.now(), // Assign a unique ID
+        name: name,
+        paymentValidated: false,
+        investment: investment,
+        gain: 0, // Initial gain is 0, will be updated if they win
+        date: date,
+        paymentMethod: paymentMethod
+    };
+
+    // Add participant to the global list and to the current rotation queue
+    participants.push(newParticipant);
+    rotationMembersQueue.push(newParticipant);
+
+    saveParticipants(); // Save updated global list and rotation queue
+    renderParticipantsTable(); // Re-render the main table
+
+    let currentBatchSize = rotationMembersQueue.length;
+    let isWinningConditionMet = false;
+
+    // Condition for winning: First 10, then every 2
+    if (participants.length <= 10 && currentBatchSize === 10) {
+        isWinningConditionMet = true;
+    } else if (participants.length > 10 && currentBatchSize === 2) {
+        isWinningConditionMet = true;
+    }
+
+    if (isWinningConditionMet) {
+        // Calculate total investment of the current batch for payout calculation
+        const totalInvestmentForCurrentPayout = rotationMembersQueue.reduce((sum, p) => sum + p.investment, 0);
+
+        // The effective total pool for this calculation includes the new investments AND the accumulated rollover.
+        const currentTotalSystemFunds = totalInvestmentForCurrentPayout + rolloverFund;
+
+        const winnerGain = (currentTotalSystemFunds - (currentTotalSystemFunds / 3)) + 0.3;
+
+        // Select winner: Assuming the last person added to the current batch is the winner
+        const winner = rotationMembersQueue[rotationMembersQueue.length - 1];
+
+        // Update winner's gain in the global participants array
+        const globalWinnerIndex = participants.findIndex(p => p.id === winner.id);
+        if (globalWinnerIndex !== -1) {
+            participants[globalWinnerIndex].gain = winnerGain;
         }
 
-        const newParticipant = {
-            id: Date.now(), // Assign a unique ID
-            name: name,
-            paymentValidated: false,
-            investment: investment,
-            gain: 0, // Initial gain is 0, will be updated if they win
-            date: date,
-            paymentMethod: paymentMethod
-        };
+        // Calculate the amount that the system "keeps" from this `currentTotalSystemFunds`
+        // (1/3 of the total, minus 10% fee on that 1/3)
+        const amountRetainedBySystem = (currentTotalSystemFunds / 3) - (currentTotalSystemFunds / 3 * 0.10);
 
-        // Add participant to the global list and to the current rotation queue
-        participants.push(newParticipant);
-        rotationMembersQueue.push(newParticipant);
+        // Update the `rolloverFund` for the next cycle:
+        // It's the `currentTotalSystemFunds`
+        // MINUS the `winnerGain`
+        // PLUS the `amountRetainedBySystem` (which represents the 1/3 portion that is supposed to stay in the system).
+        // This way, the rollover fund accounts for both money paid out and money explicitly kept.
+        rolloverFund = currentTotalSystemFunds - winnerGain;
+        rolloverFund += amountRetainedBySystem; // Add the portion that should fuel future payouts
 
-        saveParticipants(); // Save updated global list and rotation queue
-        renderParticipantsTable(); // Re-render the main table
-
-        let currentBatchSize = rotationMembersQueue.length;
-        let isWinningConditionMet = false;
-
-        // Condition for winning: First 10, then every 2
-        // If total participants in the global list is <= 10, we're in the initial 10-person phase.
-        // If total participants > 10, we're in the subsequent 2-person phases.
-        if (participants.length <= 10 && currentBatchSize === 10) {
-            isWinningConditionMet = true;
-        } else if (participants.length > 10 && currentBatchSize === 2) {
-            isWinningConditionMet = true;
+        // Ensure rolloverFund doesn't go negative if there's a rounding issue or small amounts
+        if (rolloverFund < 0) {
+            rolloverFund = 0;
         }
 
-        if (isWinningConditionMet) {
-            // Sum investments of the current batch for payout calculation
-            const totalInvestmentForCurrentPayout = rotationMembersQueue.reduce((sum, p) => sum + p.investment, 0);
+        alert(`${translateText("Winner! Gain for this rotation:")} ${winnerGain.toFixed(2)} ${winner.paymentMethod} for ${winner.name}!`);
 
-            const payoutPool = totalInvestmentForCurrentPayout + rolloverFund;
-            const winnerGain = (payoutPool - (payoutPool / 3)) + 0.3;
+        // Reset the queue for the next batch of participants
+        rotationMembersQueue = [];
 
-            // Select winner: Assuming the last person added to the current batch is the winner
-            const winner = rotationMembersQueue[rotationMembersQueue.length - 1];
+        saveParticipants(); // Save updated participants (with winner's gain) and new rollover state
+        renderParticipantsTable(); // Re-render to show winner's updated gain
+    } else {
+        alert(`${translateText("Participant added to rotation. Current count:")} ${currentBatchSize}${translateText(" for this winner cycle.")}`);
+    }
 
-            // Update winner's gain in the global participants array
-            const globalWinnerIndex = participants.findIndex(p => p.id === winner.id);
-            if (globalWinnerIndex !== -1) {
-                participants[globalWinnerIndex].gain = winnerGain;
-            }
-
-            // Calculate new rollover fund for the *next* rotation
-            const newRollover = (payoutPool / 3) - (payoutPool / 3 * 0.10);
-            rolloverFund = newRollover;
-
-            alert(`${translateText("Winner! Gain for this rotation:")} ${winnerGain.toFixed(2)} ${winner.paymentMethod} for ${winner.name}!`);
-
-            // Reset the queue for the next batch of participants
-            rotationMembersQueue = [];
-
-            saveParticipants(); // Save updated participants (with winner's gain) and new rollover state
-            renderParticipantsTable(); // Re-render to show winner's updated gain
-        } else {
-            alert(`${translateText("Participant added to rotation. Current count:")} ${currentBatchSize}${translateText(" for this winner cycle.")}`);
-        }
-
-        // Clear inputs after adding to rotation
-        document.getElementById("participantName").value = '';
-        document.getElementById("participantInvestment").value = '';
-        document.getElementById("participantGain").value = '';
+    // Clear inputs after adding to rotation
+    document.getElementById("participantName").value = '';
+    document.getElementById("participantInvestment").value = '';
+    document.getElementById("participantGain").value = '';
+}
     }
 
     // --- Supervisor/Team Leader Functions (remain largely the same for history display) ---
