@@ -152,12 +152,6 @@
         <p><a href="#" onclick="alert('Please contact support to reset your password.');" data-translate="Forgot password?">Mot de passe oublié ?</a></p>
     </div>
 
-    <div class="card" id="codeCard" style="display:none;">
-        <h2 data-translate="Authentication Code">Code d'Authentification</h2>
-        <input type="text" id="adminCode" placeholder="Enter code">
-        <button onclick="checkAdminStep2()" data-translate="Verify Code">✔️ Vérifier Code</button>
-    </div>
-
     <div class="card" id="adminPanel" style="display:none;">
         <div class="language-selector">
             <label for="languageSelect" data-translate="Select Language:">Select Language:</label>
@@ -230,8 +224,6 @@
 <script>
     // --- Global Variables and Constants ---
     const SECURE_ADMIN_PASSWORD = "D2B1@dmin2025"; // !!! CHANGE THIS TO A SECURE PASSWORD !!!
-    const OTP_LENGTH = 6;
-    let currentOTP = '';
     let participants = [];
     let rotationMembersQueue = []; // Temporarily holds participants for the current 10-person or 2-person batch
     let rolloverFund = 0; // Amount that carries over from previous rotation
@@ -240,7 +232,7 @@
     let teamLeaders = [];
     let currentLanguage = localStorage.getItem('language') || 'fr'; // Default to French
 
-    // EmailJS configuration (replace with your actual IDs)
+    // EmailJS configuration (replace with your actual IDs) - Note: OTP sending code is removed, but EmailJS init is kept if you use it elsewhere.
     emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Replace with your EmailJS Public Key
     const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID"; // Replace with your EmailJS Service ID
     const EMAILJS_TEMPLATE_ID = "YOUR_EMAILJS_TEMPLATE_ID"; // Replace with your EmailJS Template ID (for OTP)
@@ -489,7 +481,7 @@
             "Total Gain (€)": "Ganancia Total (€)",
             "Total Investment (€)": "Inversión Total (€)",
             "Total Participants": "Número Total de Participantes",
-            "Current Rollover Fund (€)": "Fondo de Rotación Actual (€)"
+            "Current Rollover Fund (€)": "Fondo de Rotación Actuel (€)"
         }
     };
 
@@ -510,8 +502,6 @@
         document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
             element.placeholder = translateText(element.getAttribute('data-translate-placeholder'));
         });
-        // Removed recursive calls to renderParticipantsTable() and renderStats() from here.
-        // These functions should manage their own rendering and translation of dynamic content.
     }
 
     // --- Login and Authentication Functions ---
@@ -551,55 +541,18 @@
         }
     }
 
-    function generateOTP() {
-        let otp = '';
-        for (let i = 0; i < OTP_LENGTH; i++) {
-            otp += Math.floor(Math.random() * 10);
-        }
-        return otp;
-    }
-
-    function sendOTP(email) {
-        currentOTP = generateOTP(); // Store the generated OTP
-        const templateParams = {
-            to_email: email,
-            otp_code: currentOTP
-        };
-
-        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-            .then(function(response) {
-                alert(translateText('OTP sent successfully! Check your email.'));
-            }, function(error) {
-                console.error('Failed to send OTP:', error);
-                alert(translateText('Failed to send OTP. Please try again.'));
-            });
-    }
-
     function checkAdminStep1() {
         const adminPass = document.getElementById('adminPass').value;
         if (adminPass === SECURE_ADMIN_PASSWORD) {
-            // Assuming admin's email is hardcoded or fetched from somewhere
-            // IMPORTANT: Replace "D2B1.Admin@gmail.com" with the actual admin email where OTP should be sent
-            sendOTP("D2B1.Admin@gmail.com"); 
-            document.getElementById('authCard').style.display = 'none';
-            document.getElementById('codeCard').style.display = 'block';
-        } else {
-            alert(translateText('Invalid admin password.'));
-        }
-    }
-
-    function checkAdminStep2() {
-        const enteredOTP = document.getElementById('adminCode').value;
-        if (enteredOTP === currentOTP) {
             localStorage.setItem('loggedIn', 'true');
-            document.getElementById('codeCard').style.display = 'none';
+            document.getElementById('authCard').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
             alert(translateText('Login successful!'));
             loadParticipants();
-            renderParticipantsTable(); // Now renderTable will call renderStats
+            renderParticipantsTable();
             applyTranslations(); // Apply translations to static elements once after login
         } else {
-            alert(translateText('Incorrect OTP. Please try again.'));
+            alert(translateText('Invalid admin password.'));
         }
     }
 
@@ -618,7 +571,6 @@
         document.getElementById('adminPanel').style.display = 'none';
         document.getElementById('authCard').style.display = 'block';
         document.getElementById('adminPass').value = ''; // Clear password field
-        document.getElementById('adminCode').value = ''; // Clear OTP field
         alert(translateText('Logged out successfully.'));
         renderParticipantsTable(); // Clear table display
     }
@@ -721,7 +673,6 @@
 
             saveParticipants(); // Save updated participants (with winner's gain) and new rollover state
             renderParticipantsTable(); // Re-render to show winner's updated gain
-            // renderStats() is called by renderParticipantsTable()
         } else {
             alert(`${translateText("Participant added to rotation. Current count:")} ${currentBatchSize}${translateText(" for this winner cycle.")}`);
         }
@@ -745,9 +696,6 @@
     }
 
     function nextDay() {
-        // This function can be used to signify a new "day" in the rotation,
-        // though the current rotation logic is based on participant count.
-        // It might be used for daily reporting or other time-based actions.
         alert(translateText("Next day initiated (functionality to be defined)."));
     }
 
@@ -785,7 +733,6 @@
             totalGain += participant.gain;
         });
         renderStats(totalInvestment, totalGain); // Call renderStats here to update after table renders
-        // Removed applyTranslations() from here to prevent recursion
     }
 
     function renderStats(totalInvestment = 0, totalGain = 0) {
@@ -796,7 +743,6 @@
             <p><strong data-translate="Total Gain (€)">Total Gain (€)</strong>: ${totalGain.toFixed(2)}</p>
             <p><strong data-translate="Current Rollover Fund (€)">Current Rollover Fund (€)</strong>: ${rolloverFund.toFixed(2)}</p>
         `;
-        // Removed applyTranslations() from here to prevent recursion
     }
 
 
@@ -935,7 +881,6 @@
         applyTranslations(); // Apply translations on initial load for static elements
         if (localStorage.getItem('loggedIn') === 'true') {
             document.getElementById('authCard').style.display = 'none';
-            document.getElementById('codeCard').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
             loadParticipants();
             renderParticipantsTable(); // This will call renderStats
@@ -943,7 +888,6 @@
             renderTeamLeaderList();
         } else {
             document.getElementById('authCard').style.display = 'block';
-            document.getElementById('codeCard').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
         }
     });
