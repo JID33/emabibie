@@ -1,300 +1,538 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>D2B1 - Authentification Sécurisée</title>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, clean font */
-        background: linear-gradient(to bottom, #e0eafc, #cfdef3); /* Soft gradient background */
-        padding: 20px;
-        margin: 0;
-        display: flex; /* Use flexbox to center the content vertically */
-        justify-content: center; /* Center horizontally */
-        align-items: center; /* Center vertically */
-        min-height: 100vh; /* Take full viewport height */
-        box-sizing: border-box; /* Include padding in element's total width and height */
-    }
-    .card {
-        background: white;
-        padding: 30px; /* Increased padding */
-        margin: 20px auto;
-        max-width: 450px; /* Adjusted max-width for better balance */
-        border-radius: 12px; /* More rounded corners */
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15); /* More prominent shadow */
-        box-sizing: border-box; /* Ensure padding doesn't add to total width */
-    }
-    h1, h3, h4 {
-        text-align: center;
-        color: #004080;
-        margin-bottom: 25px; /* Added spacing below headings */
-    }
-
-    input[type="password"],
-    input[type="text"] {
-        width: 100%;
-        padding: 12px 15px; /* More padding */
-        margin-top: 15px; /* Increased margin */
-        margin-bottom: 15px; /* Add margin below input */
-        font-size: 16px;
-        box-sizing: border-box;
-        border: 1px solid #c0d0e0; /* Softer border color */
-        border-radius: 8px; /* Rounded input fields */
-        outline: none; /* Remove default focus outline */
-        transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for focus */
-    }
-
-    input[type="password"]:focus,
-    input[type="text"]:focus {
-        border-color: #007bff; /* Highlight on focus */
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Subtle glow on focus */
-    }
-
-    /* Button Group for Side-by-Side buttons (e.g., Auth & OTP screens) */
-    .button-group {
-        display: flex; /* Enable flexbox */
-        justify-content: space-between; /* Distribute space between items */
-        gap: 15px; /* Space between buttons */
-        margin-top: 20px; /* Space above button group */
-        margin-bottom: 20px; /* Space below button group */
-    }
-
-    /* Base style for all buttons */
-    button {
-        padding: 12px 20px; /* Consistent padding */
-        font-size: 16px;
-        cursor: pointer;
-        border: none;
-        border-radius: 8px; /* Rounded buttons */
-        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Smooth transitions */
-        text-align: center;
-        white-space: nowrap; /* Prevent text wrapping */
-        box-sizing: border-box;
-    }
-
-    button:hover {
-        transform: translateY(-2px); /* Slight lift on hover */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow on hover */
-    }
-
-    .btn-danger { background-color: #e74c3c; color: white; }
-    .btn-danger:hover { background-color: #c0392b; }
-
-    .btn-primary { background-color: #007bff; color: white; } /* Updated primary color */
-    .btn-primary:hover { background-color: #0056b3; }
-
-    .btn-secondary { background-color: #6c757d; color: white; } /* Updated secondary color */
-    .btn-secondary:hover { background-color: #545b62; }
-
-    /* Styles for the main action buttons in #mainCard and buttons within dynamic sections */
-    #mainCard button,
-    #superviseurContainer button,
-    .teamleaders button { /* Apply to all buttons that should stack vertically */
-        display: block; /* Force them to stack vertically */
-        width: 100%; /* Make them full width within their container */
-        margin-bottom: 10px; /* Add spacing between stacked buttons */
-        margin-top: 0; /* Reset margin-top from generic button rule if needed */
-    }
-
-    /* Correct spacing for buttons in button-group only */
-    .button-group button {
-        margin-top: 0; /* Reset margin-top for buttons inside flex container */
-        margin-bottom: 0; /* Reset margin-bottom for buttons inside flex container */
-    }
-
-    /* Small adjustment for the text of the password strength message */
-    #passwordStrengthMessage {
-        text-align: left;
-        margin-top: -10px; /* Pull it closer to the input */
-        margin-bottom: 10px; /* Space before buttons */
-    }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; border-radius: 8px; overflow: hidden; }
-    th, td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; }
-    th { background-color: #004080; color: white; font-weight: bold; }
-    tr:nth-child(even) { background-color: #f8f8f8; } /* Zebra striping for tables */
-
-    @media (max-width: 600px) {
-      input, button { font-size: 14px; padding: 10px; }
-      table { font-size: 0.8em; }
-        .button-group {
-            flex-direction: column; /* Stack buttons on smaller screens */
-            gap: 10px;
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D2B1 - Authentification Sécurisée</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom, #e0eafc, #cfdef3);
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-    }
-    #forgotSection {
-        text-align: center;
-        margin-top: 15px;
-        font-size: 0.9em;
-        color: #555;
-        cursor: pointer;
-        text-decoration: underline; /* Make it look like a link */
-    }
-    #forgotSection:hover {
-        color: #007bff;
-    }
-    .alert-red { color: red; font-weight: bold; }
-  </style>
+        .card {
+            background: white;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 650px; /* Increased max-width to better accommodate table */
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+        }
+        h1, h3, h4 {
+            text-align: center;
+            color: #004080;
+            margin-bottom: 25px;
+        }
+
+        input[type="password"],
+        input[type="text"],
+        input[type="number"], /* Added for investment/gain inputs */
+        input[type="date"] { /* Added for date input */
+            width: 100%;
+            padding: 12px 15px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            box-sizing: border-box;
+            border: 1px solid #c0d0e0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="password"]:focus,
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex-grow: 1;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            text-align: center;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-danger { background-color: #e74c3c; color: white; }
+        .btn-danger:hover { background-color: #c0392b; }
+
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-primary:hover { background-color: #0056b3; }
+
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover { background-color: #545b62; }
+
+        /* Styles for the main action buttons in #mainCard and buttons within dynamic sections */
+        #mainCard button,
+        #superviseurContainer button,
+        .teamleaders button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .button-group button {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        #passwordStrengthMessage {
+            text-align: left;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+            border-radius: 8px;
+            overflow: hidden; /* Ensures rounded corners apply to content */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Subtle shadow for table */
+        }
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #004080;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) { background-color: #f8f8f8; }
+
+        .table-actions {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        .table-actions button {
+            padding: 5px 8px;
+            font-size: 0.8em;
+            margin: 0;
+            width: auto; /* Override 100% width for table buttons */
+            display: inline-block; /* Ensure they stay inline */
+        }
+        .payment-validated {
+            background-color: #d4edda; /* Light green for validated payments */
+            color: #155724;
+            font-weight: bold;
+        }
+        .payment-pending {
+            background-color: #f8d7da; /* Light red for pending payments */
+            color: #721c24;
+        }
+
+
+        @media (max-width: 600px) {
+            input, button { font-size: 14px; padding: 10px; }
+            table { font-size: 0.8em; }
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        #forgotSection {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #555;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        #forgotSection:hover {
+            color: #007bff;
+        }
+        .alert-red { color: red; font-weight: bold; }
+    </style>
 </head>
 <body>
 <script>
-// IMPORTANT: Replace "2hThAT8H9CsDcLLE1" with YOUR actual EmailJS Public Key.
-emailjs.init("2hThAT8H9CsDcLLE1");
+    // IMPORTANT: Replace "YOUR_EMAILJS_PUBLIC_KEY" with YOUR actual EmailJS Public Key.
+    // This is crucial for EmailJS to work.
+    emailjs.init("2hThAT8H9CsDcLLE1"); // Make sure this is your correct Public Key!
 
-let otpCode = "";
-const SECURE_ADMIN_PASSWORD = "D2B1@dmin2025"; // Reminder: NOT truly secure client-side
+    let otpCode = "";
+    // Client-side "strong" password for demonstration.
+    // NOTE: This is NOT secure for a real application as it's visible in source code.
+    const SECURE_ADMIN_PASSWORD = "D2B1@dmin2025";
 
-function isValidAdminPassword(password) {
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
-  return regex.test(password);
-}
+    // --- Data Storage and Management ---
+    let participants = []; // Array to hold participant data
 
-function sendOTPByEmail(code) {
-    const expiryTime = new Date();
-    expiryTime.setMinutes(expiryTime.getMinutes() + 15);
-    const options = { hour: 'numeric', minute: 'numeric', hour12: true, month: 'long', day: 'numeric', year: 'numeric' };
-    const formattedExpiryTime = expiryTime.toLocaleString('en-US', options);
+    // Load data from localStorage on script load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadParticipants();
+        // Optional: Pre-fill date with today's date
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById("participantDate");
+        if (dateInput) {
+            dateInput.value = today;
+        }
+    });
 
-  emailjs.send("service_3gm6ixa", "template_s0v58wk", {
-    to_name: "Emmanuel",
-    to_email: "emmanueljeambas@gmail.com",
-    message: "Votre code de vérification est : " + code,
-    passcode: code,
-    time: formattedExpiryTime
-  }).then(() => console.log("OTP envoyé par Email"))
-    .catch(err => alert("Erreur envoi Email: " + err.text));
-}
+    function saveParticipants() {
+        localStorage.setItem('d2b1_participants', JSON.stringify(participants));
+    }
 
-function checkAdminStep1() {
-  const pass = document.getElementById("adminPass").value;
-  if (pass === SECURE_ADMIN_PASSWORD) {
-    otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    document.getElementById("authCard").style.display = "none";
-    document.getElementById("codeCard").style.display = "block";
-    sendOTPByEmail(otpCode);
-  } else {
-    alert("Mot de passe incorrect");
-  }
-}
+    function loadParticipants() {
+        const storedData = localStorage.getItem('d2b1_participants');
+        if (storedData) {
+            participants = JSON.parse(storedData);
+        } else {
+            participants = []; // Initialize empty if no data found
+        }
+        renderParticipantsTable(); // Always render table on load
+    }
 
-function toggleVisibility(id) {
-  const input = document.getElementById(id);
-  input.type = input.type === "password" ? "text" : "password";
-}
+    function renderParticipantsTable() {
+        const tableBody = document.getElementById('participantsTableBody');
+        if (!tableBody) return; // Exit if table body element not found
 
-function checkAdminStep2() {
-  const code = document.getElementById("code2FA").value.trim();
-  if (code === otpCode) {
-    document.getElementById("codeCard").style.display = "none";
-    document.getElementById("mainCard").style.display = "block";
-    document.getElementById("superviseurContainer").style.display = "block";
-  } else {
-    alert("Code de vérification invalide");
-  }
-}
+        tableBody.innerHTML = ''; // Clear existing rows
 
-// REMOVED alerts from placeholder functions, only console.log for clarity now.
-// IMPORTANT: These functions STILL REQUIRE A BACKEND for actual functionality.
-function addParticipant() { console.log("Action: Ajouter Participant"); }
-function validatePayments() { console.log("Action: Valider Paiement"); }
-function nextDay() { console.log("Action: Jour Suivant"); }
-function exportToExcel() { console.log("Action: Export Historique"); }
-function resetData() { console.log("Action: Réinitialiser Données"); }
-function logout() { location.reload(); }
+        if (participants.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="8">Aucun participant enregistré.</td></tr>';
+            return;
+        }
 
-function ajouterSuperviseur() {
-  const container = document.getElementById('superviseurs');
-  const div = document.createElement('div');
-  div.className = 'card'; // Using 'card' class for new superviseur container
-  div.innerHTML = `
-    <h4>Superviseur</h4>
-    <input type="text" placeholder="Nom du superviseur" />
-    <button onclick="ajouterTeamLeader(this)" class="btn-primary">👥 Team Leader +1</button>
-    <div class="teamleaders"></div>
-    <button onclick="demanderAction('reset')" class="btn-danger">🗑️ Demande Réinitialiser</button>
-    <button onclick="demanderAction('logout')" class="btn-danger">🚪 Demande Déconnexion</button>
-  `;
-  container.appendChild(div);
-}
+        participants.forEach((p, index) => {
+            const row = tableBody.insertRow();
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${p.name}</td>
+                <td class="${p.paymentValidated ? 'payment-validated' : 'payment-pending'}">
+                    ${p.paymentValidated ? 'Oui' : 'Non'}
+                </td>
+                <td>${p.investment.toFixed(2)}</td>
+                <td>${p.gain.toFixed(2)}</td>
+                <td>${p.date}</td>
+                <td>${(p.investment + p.gain).toFixed(2)}</td>
+                <td class="table-actions">
+                    <button onclick="togglePaymentValidation(${index})" class="${p.paymentValidated ? 'btn-secondary' : 'btn-primary'}">
+                        ${p.paymentValidated ? 'Annuler Paiement' : 'Valider Paiement'}
+                    </button>
+                    <button onclick="deleteParticipant(${index})" class="btn-danger">Supprimer</button>
+                </td>
+            `;
+        });
+    }
 
-function ajouterTeamLeader(btn) {
-  const container = btn.nextElementSibling;
-  const div = document.createElement('div');
-  div.className = 'card team-leader-card'; // Add a specific class for team leader cards if you want unique styling later
-  div.innerHTML = `
-    <input type="text" placeholder="Nom du team leader" />
-    <input type="text" placeholder="Nom du participant" />
-    <button class="btn-primary">➕ Ajouter</button>
-    <button class="btn-secondary">✅ Valider Paiement</button>
-    <button class="btn-secondary">🔁 Jour Suivant</button>
-    <button class="btn-primary">📤 Export</button>
-  `;
-  container.appendChild(div);
-}
+    // --- Authentication Functions ---
+    function isValidAdminPassword(password) {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+        return regex.test(password);
+    }
 
-function demanderAction(type) {
-  const msg = type === 'reset' ? 'Demande de réinitialisation envoyée à l’administrateur' : 'Demande de déconnexion envoyée à l’administrateur';
-  alert(msg); // Keep alert for these specific admin requests
-}
+    function sendOTPByEmail(code) {
+        const expiryTime = new Date();
+        expiryTime.setMinutes(expiryTime.getMinutes() + 15);
+        const options = { hour: 'numeric', minute: 'numeric', hour12: true, month: 'long', day: 'numeric', year: 'numeric' };
+        const formattedExpiryTime = expiryTime.toLocaleString('en-US', options);
+
+        emailjs.send("service_3gm6ixa", "template_s0v58wk", {
+            to_name: "Emmanuel",
+            to_email: "emmanueljeambas@gmail.com",
+            message: "Votre code de vérification est : " + code,
+            passcode: code,
+            time: formattedExpiryTime
+        }).then(() => console.log("OTP envoyé par Email"))
+        .catch(err => alert("Erreur envoi Email: " + err.text)); // Keep alert for EmailJS errors
+    }
+
+    function checkAdminStep1() {
+        const pass = document.getElementById("adminPass").value;
+        if (pass === SECURE_ADMIN_PASSWORD) {
+            otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+            document.getElementById("authCard").style.display = "none";
+            document.getElementById("codeCard").style.display = "block";
+            sendOTPByEmail(otpCode);
+        } else {
+            alert("Mot de passe incorrect");
+        }
+    }
+
+    function toggleVisibility(id) {
+        const input = document.getElementById(id);
+        input.type = input.type === "password" ? "text" : "password";
+    }
+
+    function checkAdminStep2() {
+        const code = document.getElementById("code2FA").value.trim();
+        if (code === otpCode) {
+            document.getElementById("codeCard").style.display = "none";
+            document.getElementById("mainCard").style.display = "block";
+            document.getElementById("superviseurContainer").style.display = "block";
+            renderParticipantsTable(); // Render table after successful login
+        } else {
+            alert("Code de vérification invalide");
+        }
+    }
+
+    // --- Main Admin Actions ---
+    function addParticipant() {
+        const name = document.getElementById("participantName").value.trim();
+        const investment = parseFloat(document.getElementById("participantInvestment").value);
+        const gain = parseFloat(document.getElementById("participantGain").value);
+        const date = document.getElementById("participantDate").value;
+
+        if (!name || isNaN(investment) || isNaN(gain) || !date) {
+            alert("Veuillez remplir tous les champs (Nom, Investissement, Gain, Date) avec des valeurs valides.");
+            return;
+        }
+
+        const newParticipant = {
+            name: name,
+            paymentValidated: false, // Default to not validated
+            investment: investment,
+            gain: gain,
+            date: date
+        };
+
+        participants.push(newParticipant);
+        saveParticipants();
+        renderParticipantsTable();
+
+        // Clear input fields after adding
+        document.getElementById("participantName").value = '';
+        document.getElementById("participantInvestment").value = '';
+        document.getElementById("participantGain").value = '';
+        // Date can remain as today's date or clear based on preference
+        // document.getElementById("participantDate").value = new Date().toISOString().split('T')[0];
+    }
+
+    function togglePaymentValidation(index) {
+        if (index >= 0 && index < participants.length) {
+            participants[index].paymentValidated = !participants[index].paymentValidated;
+            saveParticipants();
+            renderParticipantsTable();
+        }
+    }
+
+    function deleteParticipant(index) {
+        if (confirm("Êtes-vous sûr de vouloir supprimer ce participant ?")) {
+            if (index >= 0 && index < participants.length) {
+                participants.splice(index, 1);
+                saveParticipants();
+                renderParticipantsTable();
+            }
+        }
+    }
+
+    function nextDay() {
+        // In a real backend scenario, this would trigger daily calculations, interest, etc.
+        // For localStorage, it mainly means re-rendering or potentially applying daily logic if implemented.
+        alert("Action 'Jour Suivant' exécutée. (Fonctionnalité complète nécessite un backend)");
+        // Example: You could potentially add daily interest here if you calculate it client-side
+        // participants.forEach(p => p.gain += p.investment * 0.01); // Example: 1% daily gain
+        // saveParticipants();
+        renderParticipantsTable();
+    }
+
+    function exportToExcel() {
+        if (participants.length === 0) {
+            alert("Aucune donnée à exporter.");
+            return;
+        }
+
+        const data = [
+            ["N°", "Nom", "Paiement Validé", "Investissement", "Gain", "Date", "Total"]
+        ];
+        participants.forEach((p, index) => {
+            data.push([
+                index + 1,
+                p.name,
+                p.paymentValidated ? "Oui" : "Non",
+                p.investment,
+                p.gain,
+                p.date,
+                p.investment + p.gain
+            ]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Participants");
+        XLSX.writeFile(wb, "D2B1_Participants_Historique.xlsx");
+    }
+
+    function resetData() {
+        if (confirm("ATTENTION : Ceci effacera TOUTES les données des participants. Êtes-vous sûr ?")) {
+            localStorage.removeItem('d2b1_participants');
+            participants = []; // Clear array
+            renderParticipantsTable(); // Update table display
+            alert("Toutes les données des participants ont été réinitialisées.");
+        }
+    }
+
+    function logout() { location.reload(); }
+
+    // --- Supervisor/Team Leader (Existing Placeholder Functions) ---
+    function ajouterSuperviseur() {
+        const container = document.getElementById('superviseurs');
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+            <h4>Superviseur</h4>
+            <input type="text" placeholder="Nom du superviseur" />
+            <button onclick="ajouterTeamLeader(this)" class="btn-primary">👥 Team Leader +1</button>
+            <div class="teamleaders"></div>
+            <button onclick="demanderAction('reset')" class="btn-danger">🗑️ Demande Réinitialiser</button>
+            <button onclick="demanderAction('logout')" class="btn-danger">🚪 Demande Déconnexion</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function ajouterTeamLeader(btn) {
+        const container = btn.nextElementSibling;
+        const div = document.createElement('div');
+        div.className = 'card team-leader-card';
+        div.innerHTML = `
+            <input type="text" placeholder="Nom du team leader" />
+            <input type="text" placeholder="Nom du participant" />
+            <button class="btn-primary">➕ Ajouter</button>
+            <button class="btn-secondary">✅ Valider Paiement</button>
+            <button class="btn-secondary">🔁 Jour Suivant</button>
+            <button class="btn-primary">📤 Export</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function demanderAction(type) {
+        const msg = type === 'reset' ? 'Demande de réinitialisation envoyée à l’administrateur' : 'Demande de déconnexion envoyée à l’administrateur';
+        alert(msg);
+    }
+
+    // --- Password Strength Check (Existing) ---
+    function checkPasswordStrength() {
+        const password = document.getElementById("adminPass").value;
+        const messageElement = document.getElementById("passwordStrengthMessage");
+
+        if (password === SECURE_ADMIN_PASSWORD) {
+            messageElement.textContent = "Mot de passe correct.";
+            messageElement.style.color = "green";
+        } else if (isValidAdminPassword(password)) {
+            messageElement.textContent = "Mot de passe fort (mais incorrect).";
+            messageElement.style.color = "orange";
+        } else {
+            messageElement.textContent = "Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.";
+            messageElement.style.color = "red";
+        }
+    }
 </script>
 
 <div class="card" id="authCard">
-  <h1>Espace Admin Sécurisé</h1>
-  <input type="password" id="adminPass" placeholder="Mot de passe admin" onkeyup="checkPasswordStrength()"/>
-  <p id="passwordStrengthMessage" style="font-size:0.8em; color: gray;"></p>
-  <div class="button-group">     <button onclick="toggleVisibility('adminPass')" class="btn-secondary">👁️ Afficher/Cacher</button>
-    <button onclick="checkAdminStep1()" class="btn-primary">🔐 Connexion</button>
-  </div>
-  <div id="forgotSection" onclick="alert('Veuillez contacter l\'administrateur pour réinitialiser votre mot de passe.')">Mot de passe oublié ?</div>
+    <h1>Espace Admin Sécurisé</h1>
+    <input type="password" id="adminPass" placeholder="Mot de passe admin" onkeyup="checkPasswordStrength()"/>
+    <p id="passwordStrengthMessage" style="font-size:0.8em; color: gray;"></p>
+    <div class="button-group">
+        <button onclick="toggleVisibility('adminPass')" class="btn-secondary">👁️ Afficher/Cacher</button>
+        <button onclick="checkAdminStep1()" class="btn-primary">🔐 Connexion</button>
+    </div>
+    <div id="forgotSection" onclick="alert('Veuillez contacter l\'administrateur pour réinitialiser votre mot de passe.')">Mot de passe oublié ?</div>
 </div>
 
 <div class="card" id="codeCard" style="display:none;">
-  <p>📤 Code OTP envoyé à votre email.</p>
-  <input type="password" id="code2FA" placeholder="Entrez le code OTP" />
-  <div class="button-group">     <button onclick="toggleVisibility('code2FA')" class="btn-secondary">👁️ Afficher/Cacher</button>
-    <button onclick="checkAdminStep2()" class="btn-primary">✅ Vérifier</button>
-  </div>
+    <p>📤 Code OTP envoyé à votre email.</p>
+    <input type="password" id="code2FA" placeholder="Entrez le code OTP" />
+    <div class="button-group">
+        <button onclick="toggleVisibility('code2FA')" class="btn-secondary">👁️ Afficher/Cacher</button>
+        <button onclick="checkAdminStep2()" class="btn-primary">✅ Vérifier</button>
+    </div>
 </div>
 
 <div class="card" id="mainCard" style="display:none;">
-  <h3>D2B1 - Authentification</h3>
-  <input type="text" id="participantName" placeholder="Nom du participant" />
-  <button onclick="addParticipant()" class="btn-primary">➕ Ajouter</button>
-  <button onclick="validatePayments()" class="btn-secondary">✅ Valider Paiement</button>
-  <button onclick="nextDay()" class="btn-secondary">🔁 Jour Suivant</button>
-  <button onclick="exportToExcel()" class="btn-primary">📤 Export Historique</button>
-  <button onclick="resetData()" class="btn-danger">🗑️ Réinitialiser Données</button>
-  <button onclick="logout()" class="btn-danger">🚪 Déconnexion</button>
-  <div id="stats" style="margin-top:20px;"></div>
-  <div id="historyTable" style="margin-top:20px;"></div>
-  <div id="participantsList" style="margin-top:20px;"></div>
+    <h3>D2B1 - Gestion des Participants</h3> <input type="text" id="participantName" placeholder="Nom du participant" />
+    <input type="number" id="participantInvestment" placeholder="Investissement (€)" step="0.01" />
+    <input type="number" id="participantGain" placeholder="Gain (€)" step="0.01" />
+    <input type="date" id="participantDate" /> <button onclick="addParticipant()" class="btn-primary">➕ Ajouter Participant</button>
+    
+    <button onclick="nextDay()" class="btn-secondary">🔁 Jour Suivant</button>
+    <button onclick="exportToExcel()" class="btn-primary">📤 Export Historique</button>
+    <button onclick="resetData()" class="btn-danger">🗑️ Réinitialiser Données</button>
+    <button onclick="logout()" class="btn-danger">🚪 Déconnexion</button>
+    
+    <div id="stats" style="margin-top:20px;"></div>
+    
+    <div id="historyTable" style="margin-top:20px;">
+        <h4>Historique des Participants</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>N°</th>
+                    <th>Nom</th>
+                    <th>Paiement Validé</th>
+                    <th>Investissement (€)</th>
+                    <th>Gain (€)</th>
+                    <th>Date</th>
+                    <th>Total (€)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="participantsTableBody">
+                </tbody>
+        </table>
+    </div>
+    
+    <div id="participantsList" style="margin-top:20px;"></div>
 </div>
 
 <div class="card" id="superviseurContainer" style="display:none;">
-  <h3>Ajouter un Superviseur</h3>
-  <button class="btn-primary" onclick="ajouterSuperviseur()">👨‍💼 Superviseur +1</button>
-  <div id="superviseurs"></div>
+    <h3>Ajouter un Superviseur</h3>
+    <button class="btn-primary" onclick="ajouterSuperviseur()">👨‍💼 Superviseur +1</button>
+    <div id="superviseurs"></div>
 </div>
 
 <script>
-    function checkPasswordStrength() {
-        const password = document.getElementById("adminPass").value;
-        const messageElement = document.getElementById("passwordStrengthMessage");
+    // --- Password Strength Check (Existing - moved to end for readability) ---
+    function checkPasswordStrength() {
+        const password = document.getElementById("adminPass").value;
+        const messageElement = document.getElementById("passwordStrengthMessage");
 
-        if (password === SECURE_ADMIN_PASSWORD) {
-            messageElement.textContent = "Mot de passe correct.";
-            messageElement.style.color = "green";
-        } else if (isValidAdminPassword(password)) {
-            messageElement.textContent = "Mot de passe fort (mais incorrect).";
-            messageElement.style.color = "orange";
-        } else {
-            messageElement.textContent = "Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.";
-            messageElement.style.color = "red";
-        }
-    }
+        if (password === SECURE_ADMIN_PASSWORD) {
+            messageElement.textContent = "Mot de passe correct.";
+            messageElement.style.color = "green";
+        } else if (isValidAdminPassword(password)) {
+            messageElement.textContent = "Mot de passe fort (mais incorrect).";
+            messageElement.style.color = "orange";
+        } else {
+            messageElement.textContent = "Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.";
+            messageElement.style.color = "red";
+        }
+    }
 </script>
 </body>
 </html>
