@@ -92,6 +92,7 @@
         .strength-weak { color: red; }
         .strength-medium { color: orange; }
         .strength-strong { color: green; }
+        .strength-very-strong { color: darkgreen; } /* Added for very strong */
         .alert {
             padding: 10px;
             margin-top: 10px;
@@ -451,7 +452,7 @@
             "Next Day (TL)": "Día Siguiente (LE)",
             "Export History (TL)": "Exportar Historial (LE)",
             "Participant added successfully!": "¡Participante añadido con éxito!",
-            "Please fill all fields (Name, Investment, Date) with valid values.": "Por favor, rellene todos los campos (Nombre, Inversión, Fecha) con valores válidos.",
+            "Please fill all fields (Name, Investment, Fecha) with valid values.": "Por favor, rellene todos los campos (Nombre, Inversión, Fecha) con valores válidos.",
             "Winner! Gain for this rotation:": "¡Ganador! Ganancia para esta rotación:",
             " for ": " para ",
             "Participant added to rotation. Current count:": "Participante añadido a la rotación. Recuento actual:",
@@ -509,26 +510,26 @@
         document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
             element.placeholder = translateText(element.getAttribute('data-translate-placeholder'));
         });
-        renderParticipantsTable(); // Re-render table headers
-        renderStats(); // Re-render stats
+        // Removed recursive calls to renderParticipantsTable() and renderStats() from here.
+        // These functions should manage their own rendering and translation of dynamic content.
     }
 
     // --- Login and Authentication Functions ---
     function checkPasswordStrength(password) {
         const strengthDisplay = document.getElementById('passwordStrength');
         let strength = 0;
-        if (password.length > 5) strength++;
-        if (password.length > 8) strength++;
-        if (/[A-Z]/.test(password)) strength++;
-        if (/[0-9]/.test(password)) strength++;
-        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        if (password.length >= 8) strength++; // Stronger passwords start at 8 characters
+        if (password.length >= 12) strength++; // Even stronger at 12
+        if (/[A-Z]/.test(password)) strength++; // Uppercase letters
+        if (/[0-9]/.test(password)) strength++; // Numbers
+        if (/[^A-Za-z0-9]/.test(password)) strength++; // Special characters
 
         let strengthText = translateText("Password strength: Weak");
         let strengthClass = "strength-weak";
 
         if (strength >= 5) {
             strengthText = translateText("Password strength: Very Strong");
-            strengthClass = "strength-strong";
+            strengthClass = "strength-very-strong";
         } else if (strength >= 4) {
             strengthText = translateText("Password strength: Strong");
             strengthClass = "strength-strong";
@@ -578,7 +579,8 @@
         const adminPass = document.getElementById('adminPass').value;
         if (adminPass === SECURE_ADMIN_PASSWORD) {
             // Assuming admin's email is hardcoded or fetched from somewhere
-            sendOTP("D2B1.Admin@gmail.com"); // Replace with actual admin email
+            // IMPORTANT: Replace "D2B1.Admin@gmail.com" with the actual admin email where OTP should be sent
+            sendOTP("D2B1.Admin@gmail.com"); 
             document.getElementById('authCard').style.display = 'none';
             document.getElementById('codeCard').style.display = 'block';
         } else {
@@ -594,9 +596,8 @@
             document.getElementById('adminPanel').style.display = 'block';
             alert(translateText('Login successful!'));
             loadParticipants();
-            renderParticipantsTable();
-            renderStats();
-            applyTranslations(); // Apply translations after login
+            renderParticipantsTable(); // Now renderTable will call renderStats
+            applyTranslations(); // Apply translations to static elements once after login
         } else {
             alert(translateText('Incorrect OTP. Please try again.'));
         }
@@ -620,7 +621,6 @@
         document.getElementById('adminCode').value = ''; // Clear OTP field
         alert(translateText('Logged out successfully.'));
         renderParticipantsTable(); // Clear table display
-        renderStats(); // Clear stats display
     }
 
     // --- Data Storage and Management ---
@@ -721,7 +721,7 @@
 
             saveParticipants(); // Save updated participants (with winner's gain) and new rollover state
             renderParticipantsTable(); // Re-render to show winner's updated gain
-            renderStats(); // Update stats after a payout
+            // renderStats() is called by renderParticipantsTable()
         } else {
             alert(`${translateText("Participant added to rotation. Current count:")} ${currentBatchSize}${translateText(" for this winner cycle.")}`);
         }
@@ -784,7 +784,8 @@
             totalInvestment += participant.investment;
             totalGain += participant.gain;
         });
-        renderStats(totalInvestment, totalGain);
+        renderStats(totalInvestment, totalGain); // Call renderStats here to update after table renders
+        // Removed applyTranslations() from here to prevent recursion
     }
 
     function renderStats(totalInvestment = 0, totalGain = 0) {
@@ -795,7 +796,7 @@
             <p><strong data-translate="Total Gain (€)">Total Gain (€)</strong>: ${totalGain.toFixed(2)}</p>
             <p><strong data-translate="Current Rollover Fund (€)">Current Rollover Fund (€)</strong>: ${rolloverFund.toFixed(2)}</p>
         `;
-        applyTranslations(); // Apply translations to newly rendered stats
+        // Removed applyTranslations() from here to prevent recursion
     }
 
 
@@ -931,14 +932,13 @@
 
     // --- Initial Load ---
     document.addEventListener('DOMContentLoaded', () => {
-        applyTranslations(); // Apply translations on initial load
+        applyTranslations(); // Apply translations on initial load for static elements
         if (localStorage.getItem('loggedIn') === 'true') {
             document.getElementById('authCard').style.display = 'none';
             document.getElementById('codeCard').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'block';
             loadParticipants();
-            renderParticipantsTable();
-            renderStats();
+            renderParticipantsTable(); // This will call renderStats
             renderSuperviseurList();
             renderTeamLeaderList();
         } else {
