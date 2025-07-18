@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D2B1 - Authentification Sécurisée</title>
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f4f9; padding: 20px; margin: 0; }
+    .card { background: white; padding: 20px; margin: 20px auto; max-width: 600px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1, h3, h4 { text-align: center; color: #004080; }
+    input, button { width: 100%; padding: 10px; margin-top: 10px; font-size: 16px; box-sizing: border-box; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+    th { background-color: #004080; color: white; }
+    .btn-danger { background-color: #e74c3c; color: white; }
+    .btn-primary { background-color: #004080; color: white; }
+    .btn-secondary { background-color: #2980b9; color: white; }
+    @media (max-width: 600px) {
+      input, button { font-size: 14px; padding: 8px; }
+      table { font-size: 0.8em; }
+    }
+    #forgotSection { text-align: center; margin-top: 10px; font-size: 0.9em; color: #555; cursor: pointer; }
+    .alert-red { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+<script>
+emailjs.init("M1gXL-2NtM2UnmLXj");
+
+let otpCode = "";
+// Client-side "strong" password for demonstration.
+// NOTE: This is NOT secure for a real application as it's visible in source code.
+const SECURE_ADMIN_PASSWORD = "D2B1@dmin2025";
+
+// Function to check client-side password complexity (purely for demonstration)
+function isValidAdminPassword(password) {
+  // Regex: At least 8 characters, one uppercase, one lowercase, one number, one special character
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+  return regex.test(password);
+}
+
+function sendOTPByEmail(code) {
+  emailjs.send("service_3gm6ixa", "template_tq202es", {
+    to_name: "Emmanuel", // Replace with actual admin name
+    to_email: "emmanueljeambas@gmail.com", // Replace with actual admin email
+    message: "Votre code de vérification est : " + code
+  }).then(() => console.log("OTP envoyé par Email"))
+    .catch(err => alert("Erreur envoi Email: " + err.text));
+}
+
+function checkAdminStep1() {
+  const pass = document.getElementById("adminPass").value;
+  if (pass === SECURE_ADMIN_PASSWORD) {
+    // Only generate OTP if the admin password is correct
+    otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    document.getElementById("authCard").style.display = "none";
+    document.getElementById("codeCard").style.display = "block";
+    sendOTPByEmail(otpCode); // Send OTP via Email (if EmailJS setup is correct)
+  } else {
+    alert("Mot de passe incorrect");
+  }
+}
+
+function toggleVisibility(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+function checkAdminStep2() {
+  const code = document.getElementById("code2FA").value.trim();
+  if (code === otpCode) {
+    document.getElementById("codeCard").style.display = "none";
+    document.getElementById("mainCard").style.display = "block";
+    document.getElementById("superviseurContainer").style.display = "block";
+  } else {
+    alert("Code de vérification invalide");
+  }
+}
+
+// Placeholder functions - these won't do anything on a static site without backend logic
+function addParticipant() { alert("Fonction addParticipant() à définir (nécessite un backend)"); }
+function validatePayments() { alert("Fonction validatePayments() à définir (nécessite un backend)"); }
+function nextDay() { alert("Fonction nextDay() à définir (nécessite un backend)"); }
+function exportToExcel() { alert("Fonction exportToExcel() à définir (nécessite un backend ou client-side Excel export)"); }
+function resetData() { alert("Fonction resetData() à définir (nécessite un backend)"); }
+function logout() { location.reload(); }
+
+function ajouterSuperviseur() {
+  const container = document.getElementById('superviseurs');
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.innerHTML = `
+    <h4>Superviseur</h4>
+    <input type="text" placeholder="Nom du superviseur" />
+    <button onclick="ajouterTeamLeader(this)" class="btn-primary">👥 Team Leader +1</button>
+    <div class="teamleaders"></div>
+    <button onclick="demanderAction('reset')" class="btn-danger">🗑️ Demande Réinitialiser</button>
+    <button onclick="demanderAction('logout')" class="btn-danger">🚪 Demande Déconnexion</button>
+  `;
+  container.appendChild(div);
+}
+
+function ajouterTeamLeader(btn) {
+  const container = btn.nextElementSibling;
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.innerHTML = `
+    <input type="text" placeholder="Nom du team leader" />
+    <input type="text" placeholder="Nom du participant" />
+    <button class="btn-primary">➕ Ajouter</button>
+    <button class="btn-secondary">✅ Valider Paiement</button>
+    <button class="btn-secondary">🔁 Jour Suivant</button>
+    <button class="btn-primary">📤 Export</button>
+  `;
+  container.appendChild(div);
+}
+
+function demanderAction(type) {
+  const msg = type === 'reset' ? 'Demande de réinitialisation envoyée à l’administrateur' : 'Demande de déconnexion envoyée à l’administrateur';
+  alert(msg);
+  // In a real application, this would send a request to a backend server.
+}
+</script>
+
+<div class="card" id="authCard">
+  <h1>Espace Admin Sécurisé</h1>
+  <input type="password" id="adminPass" placeholder="Mot de passe admin" onkeyup="checkPasswordStrength()"/>
+  <p id="passwordStrengthMessage" style="font-size:0.8em; color: gray;"></p>
+  <button onclick="toggleVisibility('adminPass')" class="btn-secondary">👁️ Afficher/Cacher</button>
+  <button onclick="checkAdminStep1()" class="btn-primary">🔐 Connexion</button>
+  <div id="forgotSection" onclick="alert('Veuillez contacter l\'administrateur pour réinitialiser votre mot de passe.')">Mot de passe oublié ?</div>
+</div>
+
+<div class="card" id="codeCard" style="display:none;">
+  <p>📤 Code OTP envoyé à votre email.</p>
+  <input type="password" id="code2FA" placeholder="Entrez le code OTP" />
+  <button onclick="toggleVisibility('code2FA')" class="btn-secondary">👁️ Afficher/Cacher</button>
+  <button onclick="checkAdminStep2()" class="btn-primary">✅ Vérifier</button>
+</div>
+
+<div class="card" id="mainCard" style="display:none;">
+  <h3>D2B1 - Authentification</h3>
+  <input type="text" id="participantName" placeholder="Nom du participant" />
+  <button onclick="addParticipant()" class="btn-primary">➕ Ajouter</button>
+  <button onclick="validatePayments()" class="btn-secondary">✅ Valider Paiement</button>
+  <button onclick="nextDay()" class="btn-secondary">🔁 Jour Suivant</button>
+  <button onclick="exportToExcel()" class="btn-primary">📤 Export Historique</button>
+  <button onclick="resetData()" class="btn-danger">🗑️ Réinitialiser Données</button>
+  <button onclick="logout()" class="btn-danger">🚪 Déconnexion</button>
+  <div id="stats" style="margin-top:20px;"></div>
+  <div id="historyTable" style="margin-top:20px;"></div>
+  <div id="participantsList" style="margin-top:20px;"></div>
+</div>
+
+<div class="card" id="superviseurContainer" style="display:none;">
+  <h3>Ajouter un Superviseur</h3>
+  <button class="btn-primary" onclick="ajouterSuperviseur()">👨‍💼 Superviseur +1</button>
+  <div id="superviseurs"></div>
+</div>
+
+<script>
+    function checkPasswordStrength() {
+        const password = document.getElementById("adminPass").value;
+        const messageElement = document.getElementById("passwordStrengthMessage");
+
+        if (password === SECURE_ADMIN_PASSWORD) {
+            messageElement.textContent = "Mot de passe correct.";
+            messageElement.style.color = "green";
+        } else if (isValidAdminPassword(password)) {
+            messageElement.textContent = "Mot de passe fort (mais incorrect).";
+            messageElement.style.color = "orange";
+        } else {
+            messageElement.textContent = "Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.";
+            messageElement.style.color = "red";
+        }
+    }
+</script>
+</body>
+</html>
